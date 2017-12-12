@@ -1,102 +1,123 @@
 using MIDI, StatsBase
 
 ###############################################################################
-###############################################################################
-# Research Functions that concern musical aspects
-###############################################################################
+# Grid
 ###############################################################################
 function isgrid(Grid)
-  if Grid[1] != 0 || Grid[end] != 1
-    throw(ArgumentError("Grids must start from 0 and end in 1."))
-  end
-  true
+    issorted(Grid) || throw(ArgumentError("Grids must be sorted."))
+    if Grid[1] != 0 || Grid[end] != 1
+        throw(ArgumentError("Grids must start from 0 and end in 1."))
+    end
+    true
 end
+
+function closest_point(grid, x)
+    best = 1
+    dxbest = abs(x - grid[1])
+    for i in 2:length(grid)
+        dx = abs(x - grid[i])
+        if dx < dxbest
+            dxbest = dx
+            best = i
+        end
+    end
+    return best
+end
+
+function closest_realgrid(grid, x, tpq::Int)
+    best = 1
+    dxbest = abs(x - grid[1]*tpq)
+    for i in 2:length(grid)
+        dx = abs(x - grid[i]*tpq)
+        if dx < dxbest
+            dxbest = dx
+            best = i
+        end
+    end
+    return best
+end
+
+
+
+
+###############################################################################
+# Classifiers and quantizers
+###############################################################################
 
 
 
 # TODO: RERWITE THIS TO CLASSIFY ACCORDING TO GRID, NOT TO NONSENSE METHOD
+# TODO: Change all quantize, complete overhaul, to call classify on each note
+# and then simply move the note there.
 """
 ```julia
-classify_notes(note/s, grid, tpq::Integer = 960; kw...)
+classify(notes::Notes, grid)
+classify(note::Note, grid, tpq::Integer)
 ```
-Classify a given `Note` (or array of `Note`) according to the given grid.
+Classify given notes according to the given grid.
 
-
-a swing note or a quarter note.
-
-The `kwargs...` are dependent on the type of classification method.
-# Classification Methods
-* "triplets" : Classifies notes as part of a triplet.
-* "swung8s" : Classifies notes only as swing (last part of the triplet)
-  or quarter notes. Has keyword `sr` (for the swing ratio).
-* "13triplet" : Classifies notes as only the first or last part of a triplet. This
-  method is not equivalent with "swung8s" with `sr = 2`, due to the different handling
-  of the in-between notes.
-# Returns
-* "triplets" : 1, 2 or 3.
-* "swung8s" : 1 or 2.
-* "13triplet" : 1 or 2.
-
-For input of `Vector{Note}`, returns a `Vector{Int}`.
+Returns an integer (or vector of integers) that corresponds to the index
+of the closest grid point to the note position modulo the quarter note.
+`1` means start of the grid and `length(grid)` means
+end of the grid.
 """
-function classify_notes(note::Note, tpq::Integer, classify_method::String; kw...)
-
-  r::Int = 0
-  if classify_method == "13triplet"
-    tpt = div(tpq,3)
-    pos = Int64(note.position)
-    posmod = mod(pos, tpq)
-
-    if posmod <= div(tpt,2) || posmod >= tpq - div(tpt,2) #quarter
-      r =  1
-    elseif posmod >= 3*div(tpt,2) && posmod <= 5*div(tpt,2) #swing
-      r =  2
-    else #in the middle
-      r =  posmod <= tpt ? 1 : 2
-    end
-
-  elseif classify_method == "triplets"
-    tpt = div(tpq,3)
-    pos = Int64(note.position)
-    posmod = mod(pos, tpq)
-
-    if posmod <= div(tpt,2) || posmod >= tpq - div(tpt,2) #quarter
-      r =  1
-    elseif posmod >= 3*div(tpt,2) && posmod <= 5*div(tpt,2) #3rd 8th
-      r =  3
-    else #in the middle
-      r =  2
-    end
-
-  elseif classify_method == "swung8s"
-    pos = Int64(note.position)
-    posmod = mod(pos, tpq)
-    sr = (kw = Dict(kw); kw[:sr])
-    x = div(tpq*sr, sr+1)
-    r = ((posmod < x/2) | (posmod > (x + (tpq-x)/2) ) ) ? 1 : 2
-
-  else
-    error("No correct method for classify_notes.")
-  end
-  return r
+function classify(grid, note::Note, tpq::Integer)
+    posmod = mod(note.position, tpq)
+    return closest_realgrid(grid, posmod, tpq)
 end
 
-function classify_notes(notes::Vector{Note}, tpq::Integer,
-  classify_method::String; kw...)
-
-  r = zeros(Int, length(notes))
-  if classify_method == "swung8s"
-    kw = Dict(kw)
+function classify(grid, notes::Note)
+    isgrid(grid)
+    r = zeros(Int, length(notes))
     for i in 1:length(notes)
-      r[i]  = classify_notes(notes[i], tpq, classify_method; sr = kw[:sr])
+        r[i] = classify(grid, notes[i], notes.tpq)
     end
-  else
-    for i in 1:length(notes)
-      r[i]  = classify_notes(notes[i], tpq, classify_method)
-    end
-  end
-  return r
+    return r
 end
+
+
+"""
+```julia
+quantize!(notes::Notes, grid)
+quantize!(note::Note, grid, tpq::Integer)
+```
+Quantize the given notes on the given `grid`.
+
+Each note is quantized (relocated) to its closest point of the `grid`, by first
+identifying that point using [`classify`](@ref).
+
+It is assumed that the grid is the same for all quarter notes of the track.
+
+This function respects the notes absolute position and quantizes in absolute position,
+not relative.
+"""
+function quantize!(note::Note, grid, tpq::Integer)
+
+    number_of_quarters = div(note.position, tpq)
+    b = classify(grid, note, tpq)
+    note.position = round(Int, (number_of_quarters*tpq + grid[b]*tpq)
+    return nothing
+end
+
+function quantize!(notes::Notes, grid)
+
+    isgrid(grid)
+    for note in notes
+        quantize!(note, grid, notes.tpq)
+    end
+    return nothing
+end
+
+"""
+    quantize(notes::Notes, grid) -> qnotes
+Same as [`quantize!`](@ref) but returns new `qnotes` instead of operating in-place.
+"""
+function quantize(notes::Notes, grid)
+    qnotes = deepcopy(notes)
+    quantize!(qnotes, grid)
+    return qnotes
+end
+
 
 """
 ```julia
@@ -120,10 +141,10 @@ function average_swing_ratio(notes::Vector{Note},
 
   # Create array of Swing Notes
   if asr_method == "AsrFromAll"
-    s = classify_notes(notes, tpq, "13triplet")
+    s = classify(notes, tpq, "13triplet")
     swingnotes = notes[s .== 2]
   elseif asr_method == "Triplets"
-    s = classify_notes(notes, tpq, "triplets")
+    s = classify(notes, tpq, "triplets")
     swingnotes = notes[s .== 3]
   end
 
@@ -148,87 +169,9 @@ function average_swing_ratio(notes::Vector{Note},
 end
 
 
-"""
-```julia
-quantize!(notes::Vector{Note}, tpq::Int, grid, which=trues(length(notes)))
-```
-Quantize the given `notes` on the given `grid`.
 
-Each note is quantized (relocated) to its closest point of the `grid`.
-The grid values must be **ordered** and in the range [0, 1]
-(both must be **included**),
-where 0 means the start of a quarter note and 1 means the end
-(and the start of the next quarter note).
-
-It is assumed that the grid is the same for all quarter notes of the track.
-Internally the grid is multiplied with `tpq` to give the correct positions in ticks.
-
-Optionally specify which notes you want to be quantized.
-"""
-function quantize!(notes::Vector{Note}, tpq::Int, Grid, which=trues(length(notes)))
-
-  if Grid[1] != 0 || Grid[end] != 1
-    error("Grid given to `quantize!` must start from 0 and end in 1.")
-  end
-  if !issorted(Grid)
-    error("Grid given to `quantize!` must be sorted!")
-  end
-
-  grid = round.(Int, collect(Grid*tpq)) #grid in ticks
-
-  for i in eachindex(notes)
-    note = notes[i]
-    which[i] || continue #if which == false do not quantize this note
-
-    number_of_quarters = div(note.position, tpq)
-    posmod = mod(note.position, tpq)
-    closest = closest_point(grid, posmod)
-
-    note.position = number_of_quarters*tpq + closest
-  end
-end
-
-function closest_point(grid, x)
-  best = grid[1]
-  dxbest = abs(x - grid[1])
-  for i in 2:length(grid)
-    dx = abs(x - grid[i])
-    if dx < dxbest
-      dxbest = dx
-      best = grid[i]
-    end
-  end
-  return best
-end
 
 function inbetween_portion(notes::Vector{Note}, tpq)
-  clas = classify_notes(notes, tpq, "triplets")
+  clas = classify(notes, tpq, "triplets")
   length(clas[clas .== 2])/length(notes)
 end
-
-# old quantize
-#
-#   if quantization_method == :Swing
-#     a = classify_notes(notes, tpq, quantization_method; show_info = show_info)
-#     kw = Dict(kwargs); sr = kw[:sr]
-#
-#     for i in 1:length(notes)
-#       number_of_quarters = div(cn[i].position, tpq)
-#
-#       if a[i] == 3 # its a "swing" note
-#         cn[i].position = number_of_quarters*tpq + round(Int, (sr/(sr+1))*tpq)
-#
-#       else #its a quarter note
-#         r = mod(cn[i].position, tpq)
-#         if r > div(tpq,2)
-#           cn[i].position = (number_of_quarters+1)*tpq
-#         else
-#           cn[i].position = number_of_quarters*tpq
-#         end
-#       end
-#     end
-#     return cn
-#   else
-#     error("Not correct method specified for function `quantize`.")
-#   end
-# end

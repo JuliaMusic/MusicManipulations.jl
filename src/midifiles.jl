@@ -1,10 +1,7 @@
 using MIDI
 export velocities, positions, pitches, durations
 export replace_notes
-###############################################################################
-###############################################################################
-# MIDI File exporting
-###############################################################################
+
 velocities(notes::Notes) = [Int8(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int8(x.value) for x in notes]
@@ -31,6 +28,7 @@ function replace_notes(oldtrack::MIDI.MIDITrack, notes::Notes)
             # skip NOTEON and NOTEOFF events of first channel
             if old_events[i].status != 0x80 && old_events[i].status != 0x90
                 # Get absolute time of event
+                # This line can be made much more efficient!
                 abstime = sum(old_events[k].dT for k in 1:i)
 
                 push!(other_events, old_events[i])
