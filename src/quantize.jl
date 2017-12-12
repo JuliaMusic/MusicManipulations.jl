@@ -1,5 +1,5 @@
 using MIDI, StatsBase
-
+export isgrid, classify, quantize, quantize!
 ###############################################################################
 # Grid
 ###############################################################################
@@ -24,7 +24,7 @@ function closest_point(grid, x)
     return best
 end
 
-function closest_realgrid(grid, x, tpq::Int)
+function closest_realgrid(grid, x, tpq::Integer)
     best = 1
     dxbest = abs(x - grid[1]*tpq)
     for i in 2:length(grid)
@@ -44,11 +44,6 @@ end
 # Classifiers and quantizers
 ###############################################################################
 
-
-
-# TODO: RERWITE THIS TO CLASSIFY ACCORDING TO GRID, NOT TO NONSENSE METHOD
-# TODO: Change all quantize, complete overhaul, to call classify on each note
-# and then simply move the note there.
 """
 ```julia
 classify(notes::Notes, grid)
@@ -61,16 +56,16 @@ of the closest grid point to the note position modulo the quarter note.
 `1` means start of the grid and `length(grid)` means
 end of the grid.
 """
-function classify(grid, note::Note, tpq::Integer)
+function classify(note::Note, grid, tpq::Integer)
     posmod = mod(note.position, tpq)
     return closest_realgrid(grid, posmod, tpq)
 end
 
-function classify(grid, notes::Note)
+function classify(notes::Notes, grid)
     isgrid(grid)
     r = zeros(Int, length(notes))
     for i in 1:length(notes)
-        r[i] = classify(grid, notes[i], notes.tpq)
+        r[i] = classify(notes[i], grid, notes.tpq)
     end
     return r
 end
@@ -85,17 +80,18 @@ Quantize the given notes on the given `grid`.
 
 Each note is quantized (relocated) to its closest point of the `grid`, by first
 identifying that point using [`classify`](@ref).
-
 It is assumed that the grid is the same for all quarter notes of the track.
 
 This function respects the notes absolute position and quantizes in absolute position,
 not relative.
+
+See also [`quantize`](@ref).
 """
 function quantize!(note::Note, grid, tpq::Integer)
 
     number_of_quarters = div(note.position, tpq)
-    b = classify(grid, note, tpq)
-    note.position = round(Int, (number_of_quarters*tpq + grid[b]*tpq)
+    b = classify(note, grid, tpq)
+    note.position = round(Int, (number_of_quarters*tpq + grid[b]*tpq))
     return nothing
 end
 

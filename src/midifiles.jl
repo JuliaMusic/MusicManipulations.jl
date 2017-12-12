@@ -18,8 +18,36 @@ are not NOTEON or NOTEOFF from the
 function replace_notes(oldtrack::MIDI.MIDITrack, notes::Notes)
 
     newtrack = MIDI.MIDITrack()
-    old_events = oldtrack.events
 
+    # Get pedal events with relative time and absolute time
+    other_events_abspos, other_events = getnotnotes(oldtrack)
+
+    # Second track will contain the new `notes`
+    MIDI.addnotes!(newtrack, notes)
+
+    for j in 1:length(other_events)
+        MIDI.addevent!(newtrack, other_events_abspos[j], other_events[j])
+    end
+
+    return newtrack
+end
+
+"""
+    getnotnotes(track::MIDI.MIDITrack) -> (abs_pos, events)
+Find all events in `track` that are not NOTEON or NOTEOFF.
+Return the found events as well as their positions in absolute time (in ticks).
+
+Each event can be added to another `MIDITrack` using
+```julia
+for ev in zip(abs_pos, events)
+    MIDI.addevent!(newtrack, ev...)
+end
+```
+
+See also [`replace_notes`](@ref).
+"""
+function getnotnotes(oldtrack::MIDI.MIDITrack)
+    old_events = oldtrack.events
     # Get pedal events with relative time and absolute time
     other_events = MIDI.MIDIEvent[]
     other_events_abspos = Int[]
@@ -37,12 +65,5 @@ function replace_notes(oldtrack::MIDI.MIDITrack, notes::Notes)
         end
     end
 
-    # Second track will contain the new `notes`
-    MIDI.addnotes(newtrack, notes)
-
-    for j in 1:length(other_events)
-        MIDI.addevent(newtrack, other_events_abspos[j], other_events[j])
-    end
-
-    return newtrack
+    return other_events_abspos, other_events
 end
