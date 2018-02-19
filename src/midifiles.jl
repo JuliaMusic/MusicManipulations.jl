@@ -2,10 +2,11 @@ using MIDI
 export velocities, positions, pitches, durations
 export replace_notes
 
-velocities(notes::Notes) = [Int8(x.velocity) for x in notes]
+velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
-pitches(notes::Notes) = [Int8(x.value) for x in notes]
+pitches(notes::Notes) = [Int(x.value) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
+modpositions(notes::Notes) = [mod(Int(x.position), notes.tpq) for x in notes]
 
 
 

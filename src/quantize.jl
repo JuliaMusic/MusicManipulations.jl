@@ -54,7 +54,7 @@ Classify given notes according to the given grid.
 Returns an integer (or vector of integers) that corresponds to the index
 of the closest grid point to the note position modulo the quarter note.
 `1` means start of the grid and `length(grid)` means
-end of the grid.
+end of the grid (i.e. *next* quarter note).
 """
 function classify(note::Note, grid, tpq::Integer)
     posmod = mod(note.position, tpq)
@@ -121,12 +121,12 @@ average_swing_ratio(notes::Vector{Note}, tpq::Integer, asr_method::String)
 ```
 Calculate the average swing ratio of given `notes` array. Return the average
 swing ratio and the associated standard deviation.
-# Methods:
-## `"AsrFromAll"`
+## Methods
+### `"AsrFromAll"`
 Classify each note with the "13triplet" method. Calculate for each
 swing note the swing ratio (with respect to a perfect quarter note)
 and then average for all notes.
-## `"Triplets"`
+### `"Triplets"`
 Classify each note with the "triplets" method. Use the notes with
 id 3 to calculate the swing ratio, and the average for all.
 """
