@@ -1,5 +1,8 @@
 module MusicManipulations
-using MIDI, StatsBase, Distributions
+
+using StatsBase, Distributions
+using Reexport
+@reexport using MIDI
 
 include("midifiles.jl")
 include("quantize.jl")

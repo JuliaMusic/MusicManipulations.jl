@@ -1,6 +1,6 @@
 using MIDI
 export velocities, positions, pitches, durations
-export replace_notes
+export replace_notes, getnotnotes
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
@@ -36,7 +36,7 @@ end
 """
     getnotnotes(track::MIDI.MIDITrack) -> (abs_pos, events)
 Find all events in `track` that are not NOTEON or NOTEOFF.
-Return the found events as well as their positions in absolute time (in ticks).
+Return the found events and their positions in absolute time (in ticks).
 
 Each event can be added to another `MIDITrack` using
 ```julia
