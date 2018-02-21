@@ -7,5 +7,9 @@ using Reexport
 include("midifiles.jl")
 include("quantize.jl")
 include("statistics.jl")
+include("jazz.jl")
+export Jazz
+
+# I made a change
 
 end
