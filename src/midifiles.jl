@@ -1,6 +1,6 @@
 using MIDI
 export velocities, positions, pitches, durations
-export replace_notes, getnotnotes
+export replace_notes, getnotnotes, modpositions
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
