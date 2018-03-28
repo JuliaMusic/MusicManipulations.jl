@@ -1,7 +1,7 @@
-export drum_statistics, drum_statistics_noplot
+export drum_statistics, drum_statistics_noplot, drumgraph
 
 """
-    drum_statistics(not::Notes, pit = pitches, extratext = "")
+    drum_statistics(not::Notes, pit = allpitches, extratext = "")
 
 Plot an histogram of the velocities for all instruments played. Additionally some statistical quantities are calculated.
 """
@@ -48,7 +48,7 @@ end
 
 
 """
-    drum_statistics_noplot(not::Notes, pit = pitches)
+    drum_statistics_noplot(not::Notes, pit = allpitches)
 
 Write statistical information about the velocities of each played instrument to the console. A warning message is displayed, if more than 2.5% of the velocities are clipped.
 """
@@ -94,9 +94,14 @@ function drumgraph(notes::Notes)
     get_current_fig_manager()[:window][:state]("zoomed")
     ax = axes()
     #collect values of interest
-    positions = positions(notes)
-    values = values(notes)
-    velos = velocities(notes)
+    positions = Int[]
+    values = UInt8[]
+    velos = UInt8[]
+    for note in notes
+        push!(positions,note.position)
+        push!(values,note.value)
+        push!(velos,note.velocity)
+    end
     #shift pitches to number of instrument
     values = map(i->graphmap[i],values)
     #plot the whole thing

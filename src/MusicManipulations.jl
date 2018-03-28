@@ -14,6 +14,4 @@ include("statistics.jl")
 include("jazz.jl")
 export Jazz
 
-# I made a change
-
 end
