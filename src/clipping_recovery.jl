@@ -1,19 +1,39 @@
-export getnotes2, Note2, Notes2
+export getnotes_td50, MoreVelNote
 
 # provide support for extra velocities
 # ----------------------------------------------
 
 
-# all pitches that support extra velocities
-digital = [0x26,0x28,0x33,0x35,0x3b]
+# all pitches of digitally connected instruments that support extra velocities
+const DIGITAL = [0x26,0x28,0x33,0x35,0x3b]
 
 """
-    getnotes2(track::MIDITrack, tpq = 960)
+    MoreVelNote
+
+Enables velocities higher than 127. Rest stays the same, see documentation of (`MIDI.Note`)[@ref].
+"""
+mutable struct MoreVelNote <: AbstractNote
+    value::UInt8
+    duration::UInt
+    position::UInt
+    channel::UInt8
+    velocity::UInt
+
+    MoreVelNote(value, duration, position, channel, velocity=0x7F) =
+        if channel > 0x7F
+            error( "Channel must be less than 128" )
+        else
+            new(value, duration, position, channel, velocity)
+        end
+end
+
+"""
+    getnotes_td50(track::MIDITrack, tpq = 960)
 
 Get notes from midi track. Take care of Roland TD-50's ability to have velocities up to 159 for snare and ride.
 """
-function getnotes2(track::MIDI.MIDITrack, tpq = 960)
-    notes = Note2[]
+function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
+    notes = MoreVelNote[]
     tracktime = UInt(0)
     extravel = 0
     for (i, event) in enumerate(track.events)
@@ -42,7 +62,7 @@ function getnotes2(track::MIDI.MIDITrack, tpq = 960)
                 # If we have a MIDI event & it's a noteoff (or a note on with 0 velocity), and it's for the same note as the first event we found, make a note
                 # Many MIDI files will encode note offs as note ons with velocity zero
                 if isa(event2, MIDI.MIDIEvent) && (event2.status & 0xF0 == MIDI.NOTEOFF || (event2.status & 0xF0 == MIDI.NOTEON && event2.data[2] == 0)) && event.data[1] == event2.data[1]
-                    push!(notes, Note2(event.data[1], duration, tracktime, event.status & 0x0F, event.data[2]+extravel))
+                    push!(notes, MoreVelNote(event.data[1], duration, tracktime, event.status & 0x0F, event.data[2]+extravel))
                     break
                 end
             end
@@ -52,41 +72,3 @@ function getnotes2(track::MIDI.MIDITrack, tpq = 960)
     sort!(notes, lt=((x, y)->x.position<y.position))
     return Notes(notes, tpq)
 end
-
-"""
-    Note2
-
-Enables velocities higher than 127. Rest stays the same, see documentation of `MIDI.Note`.
-"""
-mutable struct Note2 <: AbstractNote
-    value::UInt8
-    duration::UInt
-    position::UInt
-    channel::UInt8
-    velocity::UInt8
-
-    Note2(value, duration, position, channel, velocity=0x7F) =
-        if channel > 0x7F
-            error( "Channel must be less than 128" )
-        elseif velocity > 0x9F
-            error( "Velocity must be less than 160" )
-        else
-            new(value, duration, position, channel, velocity)
-        end
-end
-
-
-import Base.+, Base.-, Base.==
-
-+(n::Note2, i::Integer) = Note2(n.value + i, n.duration, n.position, n.channel, n.velocity)
-+(i::Integer, n::Note2) = n + i
-
--(n::Note2, i::Integer) = Note2(n.value - i, n.duration, n.position, n.channel, n.velocity)
--(i::Integer, n::Note2) = n - i
-
-==(n1::Note2, n2::Note2) =
-    n1.value == n2.value &&
-    n1.duration == n2.duration &&
-    n1.position == n2.position &&
-    n1.channel == n2.channel &&
-    n1.velocity == n2.velocity

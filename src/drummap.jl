@@ -1,9 +1,10 @@
 
 # Map the pitches of midinotes to Instruments of Roland TD-50
-drummap = Dict{UInt8,String}(
+const TD50_MAP = Dict{UInt8,String}(
     0x16=>"Hihat Shaft (closed)",
     0x1a=>"Hihat Shaft",
     0x24=>"Kick",
+    0x25=>"Snare RimClick",#########
     0x26=>"Snare",
     0x28=>"Snare Rimshot",
     0x2a=>"Hihat Tip (closed)",
@@ -13,8 +14,10 @@ drummap = Dict{UInt8,String}(
     0x2e=>"Hihat Tip",
     0x2f=>"Tom 2 Rimshot",
     0x30=>"Tom 1",
+    0x31=>"Cymbal 1",########
     0x32=>"Tom 1 Rimshot",
     0x33=>"Ride Tip",
+    0x34=>"Cymbal 2",########
     0x35=>"Ride Bell",
     0x37=>"Cymbal 1",
     0x39=>"Cymbal 2",
@@ -22,15 +25,16 @@ drummap = Dict{UInt8,String}(
     0x3b=>"Ride Shaft")
 
 # All posible pitches in an Array
-allpitches = collect(keys(drummap))
+const ALLPITCHES_TD50 = collect(keys(TD50_MAP))
 
 # Map the pitches to numbers for plotting in a graph
-graphmap = Dict{UInt8,UInt8}(
+const GRAPHMAP_TD50 = Dict{UInt8,UInt8}(
     0x16=>8,
     0x1a=>5,
-    0x24=>1,
-    0x26=>2,
-    0x28=>3,
+    0x24=>0,
+    0x25=>3,
+    0x26=>1,
+    0x28=>2,
     0x2a=>7,
     0x2b=>16,
     0x2c=>6,
@@ -38,8 +42,10 @@ graphmap = Dict{UInt8,UInt8}(
     0x2e=>4,
     0x2f=>15,
     0x30=>12,
+    0x31=>18,######
     0x32=>13,
     0x33=>9,
+    0x34=>19,######
     0x35=>11,
     0x37=>18,
     0x39=>19,
@@ -47,7 +53,7 @@ graphmap = Dict{UInt8,UInt8}(
     0x3b=>10)
 
 # names of Instruments (order according to graphmap) for updating ticks in graph
-graphticks =    ["Kick","Snare","Snare Rimshot","Hihat Tip",
+const GRAPHTICKS_TD50 =    ["Kick","Snare","Snare Rimshot","Snare RimClick","Hihat Tip",
                  "Hihat Shaft","Hihat Foot Close","Hihat Tip (closed)",
                  "Hihat Shaft (closed)","Ride Tip","Ride Shaft",
                  "Ride Bell","Tom 1","Tom 1 Rimshot","Tom 2",
