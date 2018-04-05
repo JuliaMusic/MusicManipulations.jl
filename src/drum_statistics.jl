@@ -3,7 +3,8 @@ export drum_statistics, drum_statistics_noplot, drumgraph
 """
     drum_statistics(not::Notes, pit = ALLPITCHES_TD50, extratext = "")
 
-Plot an histogram of the velocities for all instruments played. Additionally some statistical quantities are calculated.
+Plot an histogram of the velocities for all instruments played.
+Additionally some statistical quantities are calculated.
 """
 function drum_statistics(not::Notes, pit = ALLPITCHES_TD50, extratext = "")
     for pitch in pit
@@ -50,7 +51,9 @@ end
 """
     drum_statistics_noplot(not::Notes, pit = ALLPITCHES_TD50)
 
-Write statistical information about the velocities of each played instrument to the console. A warning message is displayed, if more than 2.5% of the velocities are clipped.
+Write statistical information about the velocities of each played instrument
+to the console.
+A warning message is displayed, if more than 2.5% of the velocities are clipped.
 """
 function drum_statistics_noplot(not::Notes, pit = ALLPITCHES_TD50)
     for pitch in pit

@@ -42,7 +42,7 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
         if isa(event, MIDIEvent) && event.status & 0xF0 == NOTEON && event.data[2] > 0
             duration = UInt(0)
             #Test if the next event is an extra velocity event and modify velocity if needed.
-            if event.data[2]==0x7f && track.events[i+1].status==0xb0 && track.events[i+1].data[1]==0x58
+            if event.data[1] in DIGITAL && event.data[2]==0x7f && track.events[i+1].status==0xb0 && track.events[i+1].data[1]==0x58
                 extravel = floor(UInt8,track.events[i+1].data[2]/2)
                 if extravel > 32
                     extravel = 32
@@ -50,7 +50,7 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
             end
             #Test if the previous event is an extra velocity event and modify velocity if needed.
             if i>2 #first event is alwas METAEvent
-                if event.data[2]==0x7f && track.events[i-1].status==0xb0 && track.events[i-1].data[1]==0x58
+                if event.data[1] in DIGITAL && event.data[2]==0x7f && track.events[i-1].status==0xb0 && track.events[i-1].data[1]==0x58
                     extravel = floor(UInt8,track.events[i-1].data[2]/2)
                     if extravel > 32
                         extravel = 32
