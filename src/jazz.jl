@@ -28,10 +28,10 @@ function average_swing_ratio(notes::Notes, asr_method::String)
     # Create array of Swing Notes
     if asr_method == "swung8s"
         s = classify(notes, [0, 2//3, 1])
-        swingnotes = notes[s .== 2]
+        swingnotes = notes.notes[s .== 2]
     elseif asr_method == "triplets"
         s = classify(notes, [0, 1//3, 2//3, 1])
-        swingnotes = notes[s .== 3]
+        swingnotes = notes.notes[s .== 3]
     end
 
     # Create Swing ratios array
