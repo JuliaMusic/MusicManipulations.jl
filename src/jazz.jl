@@ -51,7 +51,7 @@ function average_swing_ratio(notes::Notes, asr_method::String)
     # end
     # sr_std = sqrt(sr_std/length(swingnotes)) # do not use length-1
 
-    return mean_and_std(sr)
+    return mean(sr), std(sr)
 end
 
 
