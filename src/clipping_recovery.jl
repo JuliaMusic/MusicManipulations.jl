@@ -1,5 +1,7 @@
 export getnotes_td50, MoreVelNote
 
+#export something in order to have MoreVelNote -> Note conversion?
+
 # provide support for extra velocities
 # ----------------------------------------------
 
@@ -72,3 +74,6 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
     sort!(notes, lt=((x, y)->x.position<y.position))
     return Notes(notes, tpq)
 end
+
+Note(note::MoreVelNote) = Note(note.value, note.duration, note.position,
+              note.channel, note.velocity > 0x7f ? 0x7f : note.velocity)

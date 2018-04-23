@@ -1,7 +1,5 @@
 export getfirstnotes, purgepitches!, purgepitches, twonote_distances, rm_hihatfake!
 
-#purgepitches doesn't work -> find out why
-
 """
     getfirstnotes(midi::MIDIFile, trackno = 2, septicks = 960)
 
@@ -62,7 +60,7 @@ function purgepitches(notes::MIDI.Notes, allowedpitch::Array{UInt8})
     if typeof(notes.notes[1]) == MusicManipulations.MoreVelNote
         newnotes = Notes{MoreVelNote}(Vector{MoreVelNote}[],notes.tpq)
     else
-        newnotes = Notes(Vector{Note}[],notes.tpq)
+        newnotes = Notes{Note}(Vector{Note}[],notes.tpq)
     end
     for note in notes
         if note.value in allowedpitch
