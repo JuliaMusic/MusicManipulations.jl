@@ -1,4 +1,5 @@
-export getfirstnotes, purgepitches!, purgepitches, twonote_distances, rm_hihatfake!
+export getfirstnotes, purgepitches!, purgepitches, twonote_distances,
+        rm_hihatfake!, separatepitches
 
 """
     getfirstnotes(midi::MIDIFile, trackno = 2, septicks = 960)
@@ -159,4 +160,22 @@ function rm_hihatfake!(notes::MIDI.Notes, BACK = 100, FORW = 100, CUTOFF = 0x16)
       i+=1
    end
    println("deleted $(deleted) fake notes")
+end
+
+"""
+    separatepitches(notes::MIDI.Notes)
+
+Get a dictionary \"pitch\"=>\"notes of that pitch\".
+"""
+function separatepitches(notes::MIDI.Notes)
+    separated = Dict{UInt8,Notes}()
+    for note in notes
+        if haskey(separated,note.value)
+            push!(separated[note.value],deepcopy(note))
+        else
+            push!(separated,note.value=>Notes_morevel())
+            push!(separated[note.value],deepcopy(note))
+        end
+    end
+    return separated
 end

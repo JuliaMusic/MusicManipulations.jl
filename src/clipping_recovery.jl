@@ -29,6 +29,8 @@ mutable struct MoreVelNote <: AbstractNote
         end
 end
 
+Notes_morevel() = Notes{MoreVelNote}(Vector{MoreVelNote}[], 960)
+
 """
     getnotes_td50(track::MIDITrack, tpq = 960)
 
@@ -75,5 +77,5 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
     return Notes(notes, tpq)
 end
 
-Note(note::MoreVelNote) = Note(note.value, note.duration, note.position,
+MIDI.Note(note::MoreVelNote) = MIDI.Note(note.value, note.duration, note.position,
               note.channel, note.velocity > 0x7f ? 0x7f : note.velocity)

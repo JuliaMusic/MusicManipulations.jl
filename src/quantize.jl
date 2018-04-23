@@ -1,5 +1,5 @@
 using MIDI, StatsBase
-export isgrid, classify, quantize, quantize!
+export isgrid, classify, quantize, quantize!, td50_velquant_interval
 
 # Have to move swing stuff in different folder. Create module Jazz
 export average_swing_ratio, inbetween_portion
@@ -115,4 +115,70 @@ function quantize(notes::Notes, grid)
     qnotes = deepcopy(notes)
     quantize!(qnotes, grid)
     return qnotes
+end
+
+###############################################################################
+#drum things
+###############################################################################
+
+"""
+    td50_velquant_interval(notes::MIDI.Notes, numintervals::Int)
+
+Divide the velocity range in `numintervals` intervals and quantize the
+velocities of each `Note` to the mean value of all notes of the corresponding
+instrument in this interval.
+"""
+function td50_velquant_interval(notes::MIDI.Notes, numintervals::Int)
+    #get notes separated by pitches
+    sep = separatepitches(notes)
+    newnotes = Notes_morevel()
+
+    for pitch in keys(sep)
+        #short acces to needed notes
+        pitchnotes = sep[pitch].notes
+
+        #take care of different maximum velocities
+        maxvel = 0
+        pitch in DIGITAL ? maxvel = 160 : maxvel = 128
+
+        #do a histogram and weight it with the velocities
+        hist = zeros(maxvel)
+        for note in pitchnotes
+            hist[note.velocity] += 1
+        end
+        whist = copy(hist)
+        for i = 1:length(hist)
+            whist[i] *= i
+        end
+
+        #create the partitioning and compute corresponding means
+        intlength = ceil(Int, maxvel/numintervals)
+        meanvals = zeros(Int, numintervals)
+        for i = 0:numintervals-1
+            start = i*intlength+1
+            ende = i*intlength+intlength
+            if ende > maxvel
+                ende = maxvel
+            end
+            piece = whist[start:ende]
+            hits = sum(hist[start:ende])
+            if hits != 0
+                piece ./= hits
+            end
+            meanvals[i+1] = round(Int,mean(piece)*intlength)
+        end
+
+        #quantize notes
+        for note in pitchnotes
+            quant = ceil(Int, note.velocity/intlength)
+            note.velocity = meanvals[quant]
+        end
+
+        # append to field of quantized notes
+        append!(newnotes.notes, pitchnotes)
+    end
+
+    #restore temporal order
+    sort!(newnotes.notes, lt=((x, y)->x.position<y.position))
+    return newnotes
 end
