@@ -76,6 +76,3 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
     sort!(notes, lt=((x, y)->x.position<y.position))
     return Notes(notes, tpq)
 end
-
-MIDI.Note(note::MoreVelNote) = MIDI.Note(note.value, note.duration, note.position,
-              note.channel, note.velocity > 0x7f ? 0x7f : note.velocity)

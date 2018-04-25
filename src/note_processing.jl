@@ -57,12 +57,8 @@ end
 Get new `Notes` without all notes that don\'t have a value specified in
 `allowedpitch`.
 """
-function purgepitches(notes::MIDI.Notes, allowedpitch::Array{UInt8})
-    if typeof(notes.notes[1]) == MusicManipulations.MoreVelNote
-        newnotes = Notes{MoreVelNote}(Vector{MoreVelNote}[],notes.tpq)
-    else
-        newnotes = Notes{Note}(Vector{Note}[],notes.tpq)
-    end
+function purgepitches(notes::MIDI.Notes{N}, allowedpitch::Array{UInt8}) where {N}
+    newnotes = Notes{N}(Vector{N}[],notes.tpq)
     for note in notes
         if note.value in allowedpitch
             push!(newnotes.notes,note)
