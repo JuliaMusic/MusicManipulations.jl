@@ -51,7 +51,7 @@ end
 """
 ```julia
 classify(notes::Notes, grid)
-classify(note::Note, grid, tpq::Integer)
+classify(note::AbstractNote, grid, tpq::Integer)
 ```
 Classify given notes according to the given grid.
 
@@ -60,7 +60,7 @@ of the closest grid point to the note position modulo the quarter note.
 `1` means start of the grid and `length(grid)` means
 end of the grid (i.e. *next* quarter note).
 """
-function classify(note::Note, grid, tpq::Integer)
+function classify(note::AbstractNote, grid, tpq::Integer)
     posmod = mod(note.position, tpq)
     return closest_realgrid(grid, posmod, tpq)
 end
@@ -78,7 +78,7 @@ end
 """
 ```julia
 quantize!(notes::Notes, grid)
-quantize!(note::Note, grid, tpq::Integer)
+quantize!(note::AbstractNote, grid, tpq::Integer)
 ```
 Quantize the given notes on the given `grid`.
 
@@ -91,7 +91,7 @@ not relative.
 
 See also [`quantize`](@ref).
 """
-function quantize!(note::Note, grid, tpq::Integer)
+function quantize!(note::AbstractNote, grid, tpq::Integer)
 
     number_of_quarters = div(note.position, tpq)
     b = classify(note, grid, tpq)
