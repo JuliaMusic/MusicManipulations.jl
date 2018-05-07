@@ -1,5 +1,6 @@
 using MIDI, StatsBase
-export isgrid, classify, quantize, quantize!, td50_velquant_interval
+export isgrid, classify, quantize, quantize!,
+       td50_velquant_interval, td50_velquant_peaks
 
 # Have to move swing stuff in different folder. Create module Jazz
 export average_swing_ratio, inbetween_portion
@@ -176,6 +177,56 @@ function td50_velquant_interval(notes::MIDI.Notes, numintervals::Int)
 
         # append to field of quantized notes
         append!(newnotes.notes, pitchnotes)
+    end
+
+    #restore temporal order
+    sort!(newnotes.notes, lt=((x, y)->x.position<y.position))
+    return newnotes
+end
+
+"""
+    td50_velquant_peaks(notes::MIDI.Notes, class::Dict{UInt8,VPinfo})
+
+Quantize the velocities of each instruments to the velocities of the Histograms
+peaks. Histogram classification must be provided in `class`, if not, nothing changes.
+"""
+function td50_velquant_peaks(notes::MIDI.Notes, class)#::Dict{UInt8,VPinfo})
+    newnotes = Notes_morevel()
+    sep = separatepitches(notes)
+
+    for (pitch,notes) in sep
+
+        #if quantize information supplied
+        if haskey(class,pitch)
+            vp = class[pitch]
+
+            if length(vp.peaks) == 1    #trivial case (only one peak)
+                for note in sep[pitch]
+                    note.velocity = vp.peaks[1]
+                    push!(newnotes.notes,note)
+                end
+
+            else                        #find corresponding peak
+                for note in sep[pitch]
+                    vall = 1
+                    while vp.valleys[vall] < note.velocity
+                        vall += 1
+                    end
+                    peak = 1
+                    #still to do
+                    while peak < length(vp.peaks) && vp.peaks[peak+1] < vp.valleys[vall]
+                        peak += 1
+                    end
+                    note.velocity = vp.peaks[peak]
+                    push!(newnotes.notes,note)
+
+                end
+            end
+
+        #no quantization information -> do nothing with velocity
+        else
+            append!(newnotes.notes,notes)
+        end
     end
 
     #restore temporal order

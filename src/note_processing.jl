@@ -61,7 +61,7 @@ function purgepitches(notes::MIDI.Notes{N}, allowedpitch::Array{UInt8}) where {N
     newnotes = Notes{N}(Vector{N}[],notes.tpq)
     for note in notes
         if note.value in allowedpitch
-            push!(newnotes.notes,note)
+            push!(newnotes.notes,deepcopy(note))
         end
     end
     return newnotes
@@ -163,13 +163,13 @@ end
 
 Get a dictionary \"pitch\"=>\"notes of that pitch\".
 """
-function separatepitches(notes::MIDI.Notes)
-    separated = Dict{UInt8,Notes}()
+function separatepitches(notes::MIDI.Notes{N}) where {N}
+    separated = Dict{UInt8,Notes{N}}()
     for note in notes
         if haskey(separated,note.value)
             push!(separated[note.value],deepcopy(note))
         else
-            push!(separated,note.value=>Notes_morevel())
+            push!(separated,note.value=>Notes{N}(Vector{N}[],notes.tpq))
             push!(separated[note.value],deepcopy(note))
         end
     end
