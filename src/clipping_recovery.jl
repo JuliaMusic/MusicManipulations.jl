@@ -12,7 +12,7 @@ const DIGITAL = [0x26,0x28,0x33,0x35,0x3b]
 """
     MoreVelNote
 
-Enables velocities higher than 127. Rest stays the same, see documentation of (`MIDI.Note`)[@ref].
+Enables velocities higher than 127. Rest stays the same, see documentation of [`MIDI.Note`](@ref).
 """
 mutable struct MoreVelNote <: AbstractNote
     value::UInt8
