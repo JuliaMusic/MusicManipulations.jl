@@ -28,11 +28,11 @@ end
 
 
 """
-    purgepitches!(notes::MIDI.Notes, allowedpitch::Array{UInt8})
+    purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
 
 Remove all notes that do not have a pitch specified in `allowedpitch`.
 """
-function purgepitches!(notes::MIDI.Notes, allowedpitch::Array{UInt8})
+function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
     deletes = Int[]
     for i ∈ 1:length(notes)
         !(notes[i].value ∈ allowedpitch) && push!(deletes, i)
@@ -42,7 +42,7 @@ function purgepitches!(notes::MIDI.Notes, allowedpitch::Array{UInt8})
 end
 
 """Same as `purgepitches!` but returns a copy instead."""
-purgepitches(notes::MIDI.Notes, allowedpitch::Array{UInt8}) =
+purgepitches(notes::Notes, allowedpitch::Array{UInt8}) =
     purgepitches!(deepcopy(notes), allowedpitch)
 
 

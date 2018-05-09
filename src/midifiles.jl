@@ -37,8 +37,7 @@ function randomnotes(n::Int, tpq = 960)
     durran = 1:tpq
     posran = 0:4*tpq
     for i in 1:n
-        note = Note(rand(UInt8), rand(durran), prevpos + rand(posran),
-        rand(0:127), rand(0:127))
+        note = Note(rand(UInt8), rand(durran), prevpos + rand(posran), 0, rand(0:127))
         push!(notes, note)
         prevpos = note.position
     end

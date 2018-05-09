@@ -1,5 +1,3 @@
 julia 0.6
 MIDI 0.4
-Distributions
-StatsBase
 Reexport
