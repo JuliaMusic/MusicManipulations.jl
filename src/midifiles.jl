@@ -1,13 +1,49 @@
-using MIDI
 export velocities, positions, pitches, durations
 export replace_notes, getnotnotes, modpositions
+export MoreVelNote, randomnotes
+
+"""
+    MoreVelNote
+
+Enables velocities higher than 127 but other than that identical with [`Note`](@ref).
+
+When [`Notes`](@ref) with `MoreVelNote` are written into a [`MIDITrack`](@ref),
+any velocity higher than 127 is equaled to 127.
+"""
+mutable struct MoreVelNote <: AbstractNote
+    value::UInt8
+    duration::UInt
+    position::UInt
+    channel::UInt8
+    velocity::UInt
+
+    MoreVelNote(value, duration, position, channel, velocity=0x7F) =
+        if channel > 0x7F
+            error( "Channel must be less than 128" )
+        else
+            new(value, duration, position, channel, velocity)
+        end
+end
+Notes(::Type{MoreVelNote}) = Notes{MoreVelNote}(Vector{MoreVelNote}[], 960)
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int(x.value) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
-modpositions(notes::Notes) = [mod(Int(x.position), notes.tpq) for x in notes]
 
+function randomnotes(n::Int, tpq = 960)
+    notes = Note[]
+    prevpos = 0
+    durran = 1:tpq
+    posran = 0:4*tpq
+    for i in 1:n
+        note = Note(rand(UInt8), rand(durran), prevpos + rand(posran),
+        rand(0:127), rand(0:127))
+        push!(notes, note)
+        prevpos = note.position
+    end
+    return Notes(notes, tpq)
+end
 
 
 """
