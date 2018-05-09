@@ -1,4 +1,4 @@
-export drum_statistics, drum_statistics_noplot, drumgraph
+# export drum_statistics, drum_statistics_noplot, drumgraph
 
 using Requires
 @require PyPlot begin
