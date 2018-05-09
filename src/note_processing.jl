@@ -1,4 +1,4 @@
-export getfirstnotes, purgepitches!, purgepitches, twonote_distances, separatepitches
+export getfirstnotes, purgepitches!, purgepitches, separatepitches, firstnotes
 
 """
     getfirstnotes(notes::Notes, septicks = 960)
@@ -25,6 +25,41 @@ function getfirstnotes(notes::Notes, trackno = 2, septicks = 960)
     end
     return firstnotes
 end
+
+"""
+    firstnotes(notes, grid)
+
+Return the notes that first appear in each grid point, *without quantizing them*.
+
+This function *does not* consider the notes modulo the quarter note! Different
+quarter notes have different grid points.
+"""
+function firstnotes(notes::Notes{N}, grid) where {N<:AbstractNote}
+    isgrid(grid)
+
+    clas = classify(notes, grid)
+
+    dif = clas[2:end] - clas[1:end-1]
+
+    toadd = notes.notes[2:end][dif .!= 0]
+    clas[1] != clas[2] && unshift!(toadd, notes[1])
+
+    return Notes(toadd, notes.tpq)
+end
+
+    # prevtype = clas[1]
+    # j = 1 # previous note index
+    # i = 1 # current note index
+    #
+    # ret = [notes[1]]
+    #
+    # while i ≤ length(notes)
+    #     i += 1
+    #     # current note type
+    #     curtype = classify(notes[i], grid)
+    #     if curtype != prevtype
+    #         push!(ret, notes[i])
+
 
 
 """
