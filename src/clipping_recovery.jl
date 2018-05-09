@@ -12,7 +12,7 @@ const DIGITAL = [0x26,0x28,0x33,0x35,0x3b]
 """
     MoreVelNote
 
-Enables velocities higher than 127. Rest stays the same, see documentation of (`MIDI.Note`)[@ref].
+Enables velocities higher than 127. Rest stays the same, see documentation of [`MIDI.Note`](@ref).
 """
 mutable struct MoreVelNote <: AbstractNote
     value::UInt8
@@ -28,6 +28,8 @@ mutable struct MoreVelNote <: AbstractNote
             new(value, duration, position, channel, velocity)
         end
 end
+
+Notes_morevel() = Notes{MoreVelNote}(Vector{MoreVelNote}[], 960)
 
 """
     getnotes_td50(track::MIDITrack, tpq = 960)
@@ -74,6 +76,3 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
     sort!(notes, lt=((x, y)->x.position<y.position))
     return Notes(notes, tpq)
 end
-
-Note(note::MoreVelNote) = Note(note.value, note.duration, note.position,
-              note.channel, note.velocity > 0x7f ? 0x7f : note.velocity)

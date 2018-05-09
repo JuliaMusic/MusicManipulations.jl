@@ -80,23 +80,6 @@ using Requires
     end
 end
 
-#error messages if Pyplot not imported
-function drum_statistics(x...)
-    msg = """
-    PyPlot must be loaded in order to use this function. Please ensure that
-    PyPlot is installed, then call `using PyPlot` before trying your command
-    again.
-    """
-    error(msg)
-end
-function drumgraph(x...)
-    msg = """
-    PyPlot must be loaded in order to use this function. Please ensure that
-    PyPlot is installed, then call `using PyPlot` before trying your command
-    again.
-    """
-    error(msg)
-end
 
 """
     drum_statistics_noplot(not::Notes, pit = ALLPITCHES_TD50)

@@ -1,4 +1,5 @@
-export getfirstnotes, purgepitches!, purgepitches, twonote_distances, rm_hihatfake!
+export getfirstnotes, purgepitches!, purgepitches, twonote_distances,
+        rm_hihatfake!, separatepitches
 
 """
     getfirstnotes(midi::MIDIFile, trackno = 2, septicks = 960)
@@ -72,4 +73,23 @@ function twonote_distances(notes::MIDI.Notes, firstpitch::UInt8)
     end
 
     return dist
+end
+
+
+"""
+    separatepitches(notes::MIDI.Notes)
+
+Get a dictionary \"pitch\"=>\"notes of that pitch\".
+"""
+function separatepitches(notes::MIDI.Notes{N}) where {N}
+    separated = Dict{UInt8,Notes{N}}()
+    for note in notes
+        if haskey(separated,note.value)
+            push!(separated[note.value],deepcopy(note))
+        else
+            push!(separated,note.value=>Notes{N}(Vector{N}[],notes.tpq))
+            push!(separated[note.value],deepcopy(note))
+        end
+    end
+    return separated
 end
