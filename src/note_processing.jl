@@ -1,30 +1,26 @@
-export getfirstnotes, purgepitches!, purgepitches, twonote_distances, separatepitches
+export getfirstnotes, purgepitches!, purgepitches, separatepitches, firstnotes
 
 """
-    getfirstnotes(notes::Notes, septicks = 960)
+    firstnotes(notes, grid)
 
-Get only the first played note of each instrument in a series of notes.
-If no note is played for `septicks` ticks, the next following notes are
-considered a new series.
+Return the notes that first appear in each grid point, *without quantizing them*.
+
+This function *does not* consider the notes modulo the quarter note! Different
+quarter notes have different grid points.
 """
-function getfirstnotes(notes::Notes, trackno = 2, septicks = 960)
-    pitch = UInt8[] #save which pitches allready occurred in current series
-    firstnotes = Notes() #container for firstnotes
+function firstnotes(notes::Notes{N}, grid) where {N<:AbstractNote}
+    isgrid(grid)
 
-    #iterate through all notes
-    for (i,note) in enumerate(notes)
-        #if the current note is the first of a new series, empty the pitches
-        if i>1 && note.position - notes.notes[i-1].position > septicks
-            pitch = UInt8[]
-        end
-        # take every first note of each pitch
-        if !(note.value in pitch)
-            push!(firstnotes.notes, note)
-            push!(pitch, note.value)
-        end
-    end
-    return firstnotes
+    clas = classify(notes, grid)
+
+    dif = clas[2:end] - clas[1:end-1]
+
+    toadd = notes.notes[2:end][dif .!= 0]
+    clas[1] != clas[2] && unshift!(toadd, notes[1])
+
+    return Notes(toadd, notes.tpq)
 end
+
 
 
 """
