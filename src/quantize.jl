@@ -1,9 +1,4 @@
-using MIDI, StatsBase
-export isgrid, classify, quantize, quantize!,
-       td50_velquant_interval, td50_velquant_peaks
-
-# Have to move swing stuff in different folder. Create module Jazz
-export average_swing_ratio, inbetween_portion
+export isgrid, classify, quantize, quantize!
 ###############################################################################
 # Grid
 ###############################################################################
