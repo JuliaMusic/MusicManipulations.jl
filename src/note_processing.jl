@@ -37,6 +37,12 @@ function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
     return notes
 end
 
+purgepitches(notes::Notes, allowedpitch::UInt8) =
+    purgepitches(notes,[allowedpitch])
+
+purgepitches!(notes::Notes, allowedpitch::UInt8) =
+    purgepitches!(notes,[allowedpitch])
+
 """Same as `purgepitches!` but returns a copy instead."""
 purgepitches(notes::Notes, allowedpitch::Array{UInt8}) =
     purgepitches!(deepcopy(notes), allowedpitch)
