@@ -31,7 +31,7 @@ Remove all notes that do not have a pitch specified in `allowedpitch`.
 function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
     deletes = Int[]
     for i ∈ 1:length(notes)
-        !(notes[i].value ∈ allowedpitch) && push!(deletes, i)
+        !(notes[i].pitch ∈ allowedpitch) && push!(deletes, i)
     end
     deleteat!(notes.notes, deletes)
     return notes
@@ -57,11 +57,11 @@ Get a dictionary \"pitch\"=>\"notes of that pitch\".
 function separatepitches(notes::Notes{N}) where {N}
     separated = Dict{UInt8, Notes{N}}()
     for note in notes
-        if haskey(separated, note.value)
-            push!(separated[note.value], deepcopy(note))
+        if haskey(separated, note.pitch)
+            push!(separated[note.pitch], deepcopy(note))
         else
-            push!(separated, note.value => Notes{N}(Vector{N}[], notes.tpq))
-            push!(separated[note.value], deepcopy(note))
+            push!(separated, note.pitch => Notes{N}(Vector{N}[], notes.tpq))
+            push!(separated[note.pitch], deepcopy(note))
         end
     end
     return separated

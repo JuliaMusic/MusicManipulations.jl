@@ -39,7 +39,7 @@ function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
                 # If we have a MIDI event & it's a noteoff (or a note on with 0 velocity), and it's for the same note as the first event we found, make a note
                 # Many MIDI files will encode note offs as note ons with velocity zero
                 if isa(event2, MIDI.MIDIEvent) && (event2.status & 0xF0 == MIDI.NOTEOFF || (event2.status & 0xF0 == MIDI.NOTEON && event2.data[2] == 0)) && event.data[1] == event2.data[1]
-                    push!(notes, MoreVelNote(event.data[1], duration, tracktime, event.status & 0x0F, event.data[2]+extravel))
+                    push!(notes, MoreVelNote(event.data[1], event.data[2]+extravel, tracktime, duration, event.status & 0x0F))
                     break
                 end
             end
@@ -62,10 +62,10 @@ function rm_hihatfake!(notes::MIDI.Notes, BACK = 100, FORW = 100, CUTOFF = 0x16)
 
     #first map special closed notes
     for note in notes
-        if note.value == 0x16
-            note.value = 0x1a
-        elseif note.value == 0x2a
-            note.value = 0x2e
+        if note.pitch == 0x16
+            note.pitch = 0x1a
+        elseif note.pitch == 0x2a
+            note.pitch = 0x2e
         end
     end
     #then look for fake notes
@@ -74,13 +74,13 @@ function rm_hihatfake!(notes::MIDI.Notes, BACK = 100, FORW = 100, CUTOFF = 0x16)
    len = length(notes)
    while i <= len
       #find foot close
-      if notes[i].value == 0x2c || notes[i].value == 0x1a
+      if notes[i].pitch == 0x2c || notes[i].pitch == 0x1a
          #go back and remove all fake tip strokes
          j = i-1
          #search all notes in specified BACK region
          while j>0 && notes[i].position-notes[j].position < BACK
             #if they are quiet enough
-            if notes[j].value == 0x2e && notes[j].velocity <= CUTOFF
+            if notes[j].pitch == 0x2e && notes[j].velocity <= CUTOFF
                #remove them
                deleteat!(notes.notes,j)
                deleted += 1
@@ -95,7 +95,7 @@ function rm_hihatfake!(notes::MIDI.Notes, BACK = 100, FORW = 100, CUTOFF = 0x16)
          #search all notes in specified FORW region
          while j<=len && notes[j].position-notes[i].position < FORW
             #if they are quiet enough
-            if notes[j].value == 0x2e && notes[j].velocity <= CUTOFF
+            if notes[j].pitch == 0x2e && notes[j].velocity <= CUTOFF
                #remove them
                deleteat!(notes.notes,j)
                deleted += 1
