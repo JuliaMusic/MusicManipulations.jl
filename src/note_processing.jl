@@ -32,6 +32,7 @@ function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
     return notes
 end
 
+
 """
     purgepitches(notes::Notes, allowedpitch) -> newnotes
 
@@ -41,6 +42,11 @@ Remove all notes that do not have a pitch specified in `allowedpitch`
 purgepitches(notes::Notes, allowedpitch::Array{UInt8}) =
     purgepitches!(deepcopy(notes), allowedpitch)
 
+purgepitches(notes::Notes, allowedpitch::UInt8) =
+    purgepitches(notes,[allowedpitch])
+
+purgepitches!(notes::Notes, allowedpitch::UInt8) =
+    purgepitches!(notes,[allowedpitch])
 
 
 """

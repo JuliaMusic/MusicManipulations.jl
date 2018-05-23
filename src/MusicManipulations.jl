@@ -10,6 +10,7 @@ include("quantize.jl")
 include("note_processing.jl")
 include("jazz.jl")
 include("drums.jl")
+include("timeseries.jl")
 
 export Jazz, Drums
 
