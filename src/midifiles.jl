@@ -18,7 +18,7 @@ mutable struct MoreVelNote <: AbstractNote
     channel::UInt8
 
 
-    MoreVelNote(pitch, velocity = 0x7f, position, duration, channel) =
+    MoreVelNote(pitch, velocity, position, duration, channel) =
         if channel > 0x7F
             error( "Channel must be less than 128" )
         else
