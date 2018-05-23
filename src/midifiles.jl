@@ -31,13 +31,18 @@ positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int(x.value) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
 
-function randomnotes(n::Int, tpq = 960)
+function randomnotes(n::Int, tpq = 960, randchannel = false)
     notes = Note[]
     prevpos = 0
     durran = 1:tpq
     posran = 0:4*tpq
     for i in 1:n
-        note = Note(rand(UInt8), rand(durran), prevpos + rand(posran), 0, rand(0:127))
+        if randchannel
+            note = Note(rand(UInt8), rand(0:127), prevpos + rand(posran), rand(durran),
+            rand(0:0x7F))
+        else
+            note = Note(rand(UInt8), rand(0:127), prevpos + rand(posran), rand(durran))
+        end
         push!(notes, note)
         prevpos = note.position
     end

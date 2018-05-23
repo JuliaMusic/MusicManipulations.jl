@@ -23,11 +23,6 @@ end
 
 
 
-"""
-    purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
-
-Remove all notes that do not have a pitch specified in `allowedpitch`.
-"""
 function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
     deletes = Int[]
     for i ∈ 1:length(notes)
@@ -37,16 +32,21 @@ function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
     return notes
 end
 
+
+"""
+    purgepitches(notes::Notes, allowedpitch) -> newnotes
+
+Remove all notes that do not have a pitch specified in `allowedpitch`
+(`Array{UInt8}` or `UInt8` or `Int`).
+"""
+purgepitches(notes::Notes, allowedpitch::Array{UInt8}) =
+    purgepitches!(deepcopy(notes), allowedpitch)
+
 purgepitches(notes::Notes, allowedpitch::UInt8) =
     purgepitches(notes,[allowedpitch])
 
 purgepitches!(notes::Notes, allowedpitch::UInt8) =
     purgepitches!(notes,[allowedpitch])
-
-"""Same as `purgepitches!` but returns a copy instead."""
-purgepitches(notes::Notes, allowedpitch::Array{UInt8}) =
-    purgepitches!(deepcopy(notes), allowedpitch)
-
 
 
 """
