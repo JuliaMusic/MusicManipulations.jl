@@ -14,24 +14,16 @@ also quantizing on given grid (see [`quantize`](@ref)).
 """
 function veltimeseries(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; zeros::Bool = false, av::Bool = false)
 
-    #quantize if needed
-    if grid != 0:1//notes.tpq:1
-        quantize!(notes, grid)
+    #quantize
+    qnotes = quantize(notes, grid)
 
-        #select if to put zeros and do timeseries
-        if zeros
-            return veltimeseries_quant_zeros(notes, grid, av)
-        else
-            return veltimeseries_quant(notes, av)
-        end
-    end
-
-    # if no quantization happened:
+    #select if to put zeros and do timeseries
     if zeros
-        return veltimeseries_zeros(notes,av)
+        return veltimeseries_quant_zeros(qnotes, grid, av)
     else
-        return veltimeseries_quant(notes, av)
+        return veltimeseries_quant(qnotes, av)
     end
+
 end
 
 
@@ -160,25 +152,5 @@ function veltimeseries_quant(notes::MIDI.Notes, average::Bool = false)
     end
     deleteat!(vel,deletes)
     deleteat!(pos,deletes)
-    return hcat(pos,vel)
-end
-
-function veltimeseries_zeros(notes::MIDI.Notes, av::Bool = false)
-    # get the time series without filled in zeros
-    withoutzeros = veltimeseries_quant(notes, av)
-
-    # every tick will be one point of the time series, so the positions are just a range
-    pos = collect(range(0,notes[end].position))
-
-    # start the velocity values with zeros
-    vel = zeros(notes[end].position)
-
-    # and then fill in velocities of the notes
-    for i = 1:length(withoutzeros/2) # /2 because of Nx2 Array
-
-        vel[withoutzeros[i,1]] = withoutzeros[i,2]
-
-    end
-
     return hcat(pos,vel)
 end
