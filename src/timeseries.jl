@@ -1,17 +1,16 @@
 export veltimeseries
 
 """
-    veltimeseries(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; zeros::Bool = false, av::Bool = false)
+    veltimeseries(notes, grid = 0:1//notes.tpq:1; zeros = false, av = false)
 
-Generate a time series of velocities out of given notes.
-Arguments:\n
-- `notes`:  the notes from which the time series is generated
-- `grid`:   give a grid to which the notes will be quantized before time
-            series generation. See [`quantize`](@ref) for details.
-- `zeros`:  put zeros on gridpoints/ticks where no note occurs
-- `av`:     If multiple notes appear at one gridpoint, the highest velocity is
-            chosen by default. Set this to true to average over velocities at
-            that grid point
+Generate a time series of velocities out of given `notes`, by
+also quantizing on given grid (see [`quantize`](@ref)).
+### Keyword Arguments
+- `zeros` : If `true`, put zeros on gridpoints where no note occurs. If `false` then
+  simply stich the individual entries.
+- `av`: If multiple notes appear at one gridpoint, the highest velocity is
+  chosen by default (`false`).
+  Set this to `true` to average over different velocities at that grid point.
 """
 function veltimeseries(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; zeros::Bool = false, av::Bool = false)
 
