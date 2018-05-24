@@ -11,24 +11,25 @@ When [`Notes`](@ref) with `MoreVelNote` are written into a [`MIDITrack`](@ref),
 any velocity higher than 127 is equaled to 127.
 """
 mutable struct MoreVelNote <: AbstractNote
-    value::UInt8
-    duration::UInt
-    position::UInt
-    channel::UInt8
+    pitch::UInt8
     velocity::UInt
+    position::UInt
+    duration::UInt
+    channel::UInt8
 
-    MoreVelNote(value, duration, position, channel, velocity=0x7F) =
+
+    MoreVelNote(pitch, velocity, position, duration, channel = 0) =
         if channel > 0x7F
             error( "Channel must be less than 128" )
         else
-            new(value, duration, position, channel, velocity)
+            new(pitch, velocity, position, duration, channel)
         end
 end
 Notes(::Type{MoreVelNote}) = Notes{MoreVelNote}(Vector{MoreVelNote}[], 960)
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
-pitches(notes::Notes) = [Int(x.value) for x in notes]
+pitches(notes::Notes) = [Int(x.pitch) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
 
 function randomnotes(n::Int, tpq = 960, randchannel = false)
@@ -38,8 +39,7 @@ function randomnotes(n::Int, tpq = 960, randchannel = false)
     posran = 0:4*tpq
     for i in 1:n
         if randchannel
-            note = Note(rand(UInt8), rand(0:127), prevpos + rand(posran), rand(durran),
-            rand(0:0x7F))
+            note = Note(rand(UInt8), rand(0:0x7F), prevpos + rand(posran), rand(durran), rand(0:127))
         else
             note = Note(rand(UInt8), rand(0:127), prevpos + rand(posran), rand(durran))
         end
