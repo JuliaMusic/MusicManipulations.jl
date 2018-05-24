@@ -1,6 +1,7 @@
 export velocities, positions, pitches, durations
 export replace_notes, getnotnotes, modpositions
 export MoreVelNote, randomnotes
+using MIDI: AbstractNote
 
 """
     MoreVelNote
