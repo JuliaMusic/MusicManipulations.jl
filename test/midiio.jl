@@ -1,3 +1,7 @@
+midi = readMIDIfile("serenade_full.mid")
+piano = midi.tracks[4]
+notes = getnotes(piano, midi.tpq)
+
 @testset "MIDI IO" begin
     @test midi.tpq == 960
     @test length(midi.tracks) == 4

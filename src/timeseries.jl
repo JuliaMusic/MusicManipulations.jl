@@ -41,11 +41,10 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
 
     # Start looping over notes
     i = previdx = 1; L = length(pos)
-    while i < L
-        println(i)
+    while i ≤ L
         # find entries of same grid bin
         j = 1
-        while j < L - i && pos[i+j] == pos[i]
+        while j ≤ L - i && pos[i+j] == pos[i]
             j+=1
         end
         # get timeseries value for this note

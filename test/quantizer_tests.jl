@@ -1,5 +1,6 @@
-using MIDI, MusicManipulations
-using Base.Test
+midi = readMIDIfile("serenade_full.mid")
+piano = midi.tracks[4]
+notes = getnotes(piano, midi.tpq)
 
 triplets = [0, 1//3, 2//3, 1]
 sixteenths = [0, 1//4, 2//4, 3//4, 1]
