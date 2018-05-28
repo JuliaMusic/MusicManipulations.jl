@@ -115,7 +115,7 @@ function veltimeseries_quant(notes::MIDI.Notes, average::Bool = false)
     end
 
     #get velocities and positions
-    vel = velocities(notes)
+    vel = convert(Vector{Float64},velocities(notes))
     pos = positions(notes)
 
     # multiple notes at one position will be deleted
@@ -129,15 +129,15 @@ function veltimeseries_quant(notes::MIDI.Notes, average::Bool = false)
     len = length(pos)
     #for each note
     while i <= len
-        velatpoint = Float64[]
+        velatpoint = [Float64(vel[i])]
 
         # compare the positions of the following notes to the position of the
         # current note. If they have the same position, save their velocities
         # for later and mark them for deletion.
         j = 1
         p = pos[i]
-        while i + j < len && pos[i+j] == p
-            velatpoint = vel[i+j]
+        while i + j <= len && pos[i+j] == p
+            push!(velatpoint,vel[i+j])
             push!(deletes,i+j)
             j += 1
         end
@@ -145,6 +145,7 @@ function veltimeseries_quant(notes::MIDI.Notes, average::Bool = false)
         # calculate velocity from overlapping notes
         if velatpoint != []
             vel[i] = pointvalue(velatpoint)
+            println(length(velatpoint), pointvalue(velatpoint))
         end
 
         #proceed with the next note, which has a different position
