@@ -8,3 +8,4 @@ cd(@__DIR__)
 
 include("midiio.jl")
 include("quantizer_tests.jl")
+include("timeseries.jl")

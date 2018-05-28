@@ -43,3 +43,26 @@ end
 
     @test velocities(notes) !== velocities(newnotes)
 end
+
+@testset "Note handling" begin
+
+    notes = randomnotes(1000)
+    pit = pitches(notes)
+    purg = Int[]
+    coun = Int[]
+    for pitch in unique(pitches(notes))
+        push!(purg, length(purgepitches(notes, UInt8(pitch))))
+        push!(coun, count(x->x == pitch, pit))
+    end
+    @test purg == coun
+
+    sep = separatepitches(notes)
+    sepa = Int[]
+    for pitch in unique(pitches(notes))
+        push!(sepa, length(sep[pitch]))
+    end
+
+    @test sort(collect(keys(sep))) == sort(unique(pitches(notes)))
+    @test sepa == coun
+    
+end
