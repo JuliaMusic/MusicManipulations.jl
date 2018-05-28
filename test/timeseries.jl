@@ -47,3 +47,33 @@
     @test [tseries[i] for i in 2:2:159*2+2] == zeros(Int,160)
 
 end
+
+@testset "Pitch timeseries" begin
+    # test object: onbeat (quarter) notes with pitch ascending
+    notes = Notes{Note}(Vector{Note}(), 960)
+    vals = 10:20
+    L = length(vals)
+    for (i, val) in enumerate(vals)
+        push!(notes.notes, Note(val, 5, 960*(i-1), 2))
+    end
+
+    #simple time series
+    tvec, tseries = timeseries(notes, :pitch, maximum, 0:1)
+    @test tvec == collect(0:960:(L-1)*960)
+    @test tseries == collect(vals)
+
+
+    # add notes which have been quantized to same bin
+    for  (i, val) in enumerate(vals)
+        push!(notes.notes, Note(5, 5, 960*(i-1), 2))
+    end
+    sort!(notes.notes, lt=((x, y)->x.position<y.position))
+
+    # time series for eights with zeros and average for bins
+    grid = 0:1//2:1
+    tvec, tseries = timeseries(notes, :pitch, mean, grid)
+
+    @test tvec == collect(0:480:(L)*960-480)
+    @test [tseries[i] for i in 1:2:(L-1)*2+1] == (collect(Float64, vals) .+ 5)./2
+    @test [tseries[i] for i in 2:2:(L-1)*2+2] == zeros(Int,L)
+end
