@@ -1,8 +1,4 @@
-using MIDI, MusicManipulations
-using Base.Test
-
 @testset "MIDI IO" begin
-    midi = readMIDIfile("serenade_full.mid")
     @test midi.tpq == 960
     @test length(midi.tracks) == 4
 
@@ -22,12 +18,12 @@ end
 @testset "Replace Notes" begin
 
     midi = readMIDIfile("serenade_full.mid")
-    notes = getnotes(midi.tracks[2])
+    notes2 = getnotes(midi.tracks[2])
     newtrack = deepcopy(midi.tracks[2])
     newnotes = getnotes(newtrack)
 
     for f in (velocities, positions, pitches, durations)
-        @test f(notes) == f(newnotes)
+        @test f(notes2) == f(newnotes)
     end
 
     for note in newnotes
@@ -38,31 +34,8 @@ end
     newnotes = getnotes(newtrack)
 
     for f in (positions, pitches, durations)
-        @test f(notes) == f(newnotes)
+        @test f(notes2) == f(newnotes)
     end
 
     @test velocities(notes) !== velocities(newnotes)
-end
-
-@testset "Note handling" begin
-
-    notes = randomnotes(1000)
-    pit = pitches(notes)
-    purg = Int[]
-    coun = Int[]
-    for pitch in unique(pitches(notes))
-        push!(purg, length(purgepitches(notes, UInt8(pitch))))
-        push!(coun, count(x->x == pitch, pit))
-    end
-    @test purg == coun
-
-    sep = separatepitches(notes)
-    sepa = Int[]
-    for pitch in unique(pitches(notes))
-        push!(sepa, length(sep[pitch]))
-    end
-
-    @test sort(collect(keys(sep))) == sort(unique(pitches(notes)))
-    @test sepa == coun
-    
 end

@@ -1,7 +1,7 @@
 using MIDI, MusicManipulations
 using Base.Test
 
-@testset "Time series generation" begin
+@testset "Velocity timeseries" begin
 
     # test object: onbeat notes with velocity ascending from 0 to 159
     notes = Notes{MoreVelNote}(Vector{MoreVelNote}(), 960)
