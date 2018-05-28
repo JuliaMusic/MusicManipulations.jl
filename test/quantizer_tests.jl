@@ -1,10 +1,6 @@
-using MIDI
-using Base.Test
-
 midi = readMIDIfile("serenade_full.mid")
-piano = midi.tracks[2]
-
-notes = getnotes(piano)
+piano = midi.tracks[4]
+notes = getnotes(piano, midi.tpq)
 
 triplets = [0, 1//3, 2//3, 1]
 sixteenths = [0, 1//4, 2//4, 3//4, 1]
@@ -14,23 +10,29 @@ sixteenths = [0, 1//4, 2//4, 3//4, 1]
     @test isgrid(triplets)
 
     class = classify(notes, triplets)
-    inbetw = [428, 432, 829, 833, 836, 837]
+    inbetw = [246
+    450
+    618
+    619
+    620
+    627
+    628
+    629
+    637
+    638
+    639
+    640]
 
     @test length(class) == length(notes)
     @test findin(class .== 2, true) == inbetw
 
-    @test sum( sum( class .== n ) for n in 1:3) == length(notes)
+    @test sum( sum( class .== n ) for n in 1:4) == length(notes)
 end
 @testset "Classify 16ths" begin
     @test isgrid(sixteenths)
-
     class = classify(notes, sixteenths)
-    inbetw = [837]
-
     @test length(class) == length(notes)
-    @test findin(class .== 3, true) == inbetw
-
-    @test sum( sum( class .== n ) for n in 1:4) == length(notes)
+    @test sum( sum( class .== n ) for n in 1:5) == length(notes)
 end
 
 @testset "Quantize" begin

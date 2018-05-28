@@ -1,157 +1,67 @@
-export veltimeseries
+export timeseries
 
 """
-    veltimeseries(notes, grid = 0:1//notes.tpq:1; zeros = false, av = false)
+    timeseries(notes::Notes, property, f [, grid]) -> tvec, ts
+Produce a timeseries of the `property` of the given notes, optionally
+first quantizing on the given `grid`.
 
-Generate a time series of velocities out of given `notes`, by
-also quantizing on given grid (see [`quantize`](@ref)).
-### Keyword Arguments
-- `zeros` : If `true`, put zeros on gridpoints where no note occurs. If `false` then
-  simply stich the individual entries.
-- `av`: If multiple notes appear at one gridpoint, the highest velocity is
-  chosen by default (`false`).
-  Set this to `true` to average over different velocities at that grid point.
+After quantization, it is often
+the case that many notes are in the same bin of the grid. The **function** `f`
+denotes which value of the vector of the `property` of the notes to keep.
+Typical values are `minimum, maximum, mean`, etc (*for type stability the returned
+timeseries are always `Float64`*).
+
+The `property` can be `:velocity`, `:pitch`, or `:duration`. Grid bins without any
+notes are given the value `0`. This **can be problematic** if you request for
+`:pitch` and your `notes` also include notes which actually have pitch `0`,
+i.e. `C0`.
 """
-function veltimeseries(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; zeros::Bool = false, av::Bool = false)
-
-    #quantize
+function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
+    isgrid(grid)
+    tpq = notes.tpq
     qnotes = quantize(notes, grid)
+    pos = positions(qnotes)
+    # Real grid and grid bins
+    rgrid = tpq .* grid
+    bins = round.(Int, rgrid)[1:end-1]
+    # tvec limits
+    firstp = Int(qnotes[1].position)
+    firstbin = findfirst(x -> x == mod(firstp, tpq), bins)
 
-    #select if to put zeros and do timeseries
-    if zeros
-        return veltimeseries_quant_zeros(qnotes, grid, av)
-    else
-        return veltimeseries_quant(qnotes, av)
+    # Create tvec
+    tvec = (firstp÷tpq)*tpq .+ bins[firstbin:end]
+    c = firstp÷tpq + 1
+    while tvec[end] < notes[end].position
+        append!(tvec, bins .+ c*tpq)
+        c += 1
     end
 
-end
+    # Empty timeseries
+    ts = zeros(Float64, size(tvec))
 
-
-"""
-    veltimeseries_quant_zeros(notes::MIDI.Notes, grid, average::Bool = false)
-
-Get the velocity time series of the given notes which have been quantized to
-`grid`. Add zeros at grid positions where no note is played.
-If multiple notes appear at the same gridpoint, the higher velocity is
-chosen for the time series. Set `average` to true, to use the mean value.
-"""
-function veltimeseries_quant_zeros(notes::MIDI.Notes, grid, average::Bool = false)
-
-    #beat position
-    pos = 0
-    #end of last beat (or less than tpq more)
-    maxpos = notes[end].position
-
-    #number of intervals in the grid
-    intervalcount = length(grid)-1
-
-    #ticks from beginning of beat to gridpoint
-    steps = round.(Int,notes.tpq.*grid)
-
-    #index in notes
-    notenumber = 1
-    maxnotenumber = length(notes.notes)
-
-    #container for multiple velocities at one point
-    velatpoint = Float64[]
-
-    #select how to deal with multiple notes at one point
-    if average
-        pointvalue = mean
-    else
-        pointvalue = maximum
-    end
-
-    #space for timeseries
-    series = Float64[]
-    sizehint!(series,round(Int,notes[end].position/intervalcount))
-    posi = Float64[]
-    sizehint!(posi,round(Int,notes[end].position/intervalcount))
-
-    #for each beat
-    while pos <= maxpos
-
-        #for each gridpoint
-        for i = 1:intervalcount
-
-            currentpos = pos + steps[i]
-            velatpoint = Float64[]
-
-            #collect notes at current gridpoint
-            while notenumber <= maxnotenumber && notes[notenumber].position == currentpos
-                push!(velatpoint,notes[notenumber].velocity)
-                notenumber +=1
-            end
-
-            # find value for this gridpoint
-            if velatpoint == []
-                push!(series,0.0)
-                push!(posi,currentpos)
-            else
-                push!(series,pointvalue(velatpoint))
-                push!(posi,currentpos)
-            end
-        end
-        # go to next beat
-        pos += notes.tpq
-    end
-    return hcat(posi,series)
-end
-
-"""
-    veltimeseries_quant(notes::MIDI.Notes, average::Bool = false)
-
-Get the velocity time series of the given notes which might have been quantized.
-If multiple notes appear at the same position, the higher velocity is
-chosen for the time series. Set `average` to true, to use the mean value.
-"""
-function veltimeseries_quant(notes::MIDI.Notes, average::Bool = false)
-
-    #select how to deal with multiple notes at one point
-    if average
-        pointvalue = mean
-    else
-        pointvalue = maximum
-    end
-
-    #get velocities and positions
-    vel = convert(Vector{Float64},velocities(notes))
-    pos = positions(notes)
-
-    # multiple notes at one position will be deleted
-    deletes = Int[]
-    # here we keep their velocities
-    velatpoint = Float64[]
-
-    # note index
-    i = 1
-    #maximum index
-    len = length(pos)
-    #for each note
-    while i <= len
-        velatpoint = [Float64(vel[i])]
-
-        # compare the positions of the following notes to the position of the
-        # current note. If they have the same position, save their velocities
-        # for later and mark them for deletion.
+    # Start looping over notes
+    i = previdx = 1; L = length(pos)
+    while i ≤ L
+        # find entries of same grid bin
         j = 1
-        p = pos[i]
-        while i + j <= len && pos[i+j] == p
-            push!(velatpoint,vel[i+j])
-            push!(deletes,i+j)
-            j += 1
+        while j ≤ L - i && pos[i+j] == pos[i]
+            j+=1
+        end
+        # get timeseries value for this note
+        if j > 1
+            d = [getfield(qnotes[k], property) for k in i:i+j-1]
+            val = Float64(f(d))
+        else
+            val = Float64(getfield(qnotes[i], property))
         end
 
-        # calculate velocity from overlapping notes
-        if velatpoint != []
-            vel[i] = pointvalue(velatpoint)
-            println(length(velatpoint), pointvalue(velatpoint))
-        end
+        # find pos[i] in tvec
+        idx = findfirst(x -> x == pos[i], tvec)
+        ts[idx] = val
+        # TODO: For pitch, change zeros of intermediate entries
+        # to pitch of previous notes
 
-        #proceed with the next note, which has a different position
-        i = i+j
+        i += j
     end
-    deleteat!(vel,deletes)
-    deleteat!(pos,deletes)
-    return hcat(pos,vel)
+    return tvec, ts
 end
