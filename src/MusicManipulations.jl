@@ -11,6 +11,7 @@ include("data_extraction.jl")
 include("jazz.jl")
 include("drums.jl")
 include("timeseries.jl")
+include("visualize.jl")
 
 export Jazz, Drums
 

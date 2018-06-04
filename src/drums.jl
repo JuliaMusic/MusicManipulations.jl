@@ -140,7 +140,7 @@ const MAP_TD50 = Dict{UInt8,String}(
 const ALLPITCHES_TD50 = collect(keys(MAP_TD50))
 
 # Map the pitches to numbers for plotting in a graph
-const GRAPHMAP_TD50 = Dict{UInt8,UInt8}(
+const REORDER_TD50 = Dict{UInt8,UInt8}(
     0x16=>8,
     0x1a=>5,
     0x24=>0,
@@ -163,15 +163,6 @@ const GRAPHMAP_TD50 = Dict{UInt8,UInt8}(
     0x39=>19,
     0x3a=>17,
     0x3b=>10)
-
-# names of Instruments (order according to graphmap) for updating ticks in graph
-const GRAPHTICKS_TD50 =    ["Kick","Snare","Snare Rimshot","Snare RimClick","Hihat Head",
-                 "Hihat Rim","Hihat Foot Close","Hihat Head (closed)",
-                 "Hihat Rim (closed)","Ride Head","Ride Rim",
-                 "Ride Bell","Tom 1","Tom 1 Rimshot","Tom 2",
-                 "Tom 2 Rimshot","Tom 3","Tom 3 Rimshot","Cymbal 1","Cymbal 2"]
-
-
 
 ###############################################################################
 #drum things
