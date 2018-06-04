@@ -63,31 +63,31 @@ end
 
 @require PyPlot begin
 """
-    tobenamed(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
+    tobenamed(notes::Notes [, grid]; kwargs...)
 
 Visualize the `notes` by plotting them as lines in a pitch over ticks diagram.
-The duration of a `Note` is represented by the length of the correspondin line.
+The duration of a `Note` is represented by the length of the corresponding line.
 
-Optional argument `grid`:
-Additionally plot vertical lines at the positions specified by grid. The beginning
-of a beat is marked by a darker line.
+Optionally provide a `grid` (see [`quantize`](@ref))
+to additionally plot vertical lines at the positions
+specified by it. The beginning of a quarter note is marked by a darker line.
 
 Keyword arguments:
-    - `ticknames`:
+    - `ticknames::Dict{UInt8, String} = standardnames`:
     Change the ticks labels of the pitches to be arbitrary strings. Provide a
     dictionary with the pitches you'd like to assign a label as keys and the
     labels as values. If you leave out pitches, they will be named like standard
     MIDI notes.
-    - `reorder`:
+    - `reorder::Dict{UInt8, UInt8} = identimap`:
     For better readability you can change the pitches to be mapped to different
     values on the y-axis. Provide a dictionary with the pitches you'd like to
     reorder as keys and the new values they shall be mapped to as values.
     BE CAREFUL, if you map multiple pitches to one value, strange things can happen.
     The reordering does not affect the relabeling via `ticknames` (reordered
     notes get the labels of the original pitch) and if you leave out pitches
-    they will just stay where they were. 
+    they will just stay where they were.
 """
-function tobenamed(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
+function tobenamed(notes::MIDI.Notes, grid = nothing; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
 
 # positions of the notes separated by velocities (for plotting in different colors)
 x1 = Dict{UInt, Vector{UInt}}()
@@ -175,7 +175,7 @@ for vel in vels
 end
 
 # handle grid
-if grid != 0:1//notes.tpq:1
+if grid != nothing
     gpoints = notes.tpq*grid[2:end-1]
     g = UInt[]
     beat = UInt[]
