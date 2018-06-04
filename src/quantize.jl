@@ -69,23 +69,6 @@ function classify(notes::Notes, grid)
     return r
 end
 
-
-"""
-```julia
-quantize!(notes::Notes, grid)
-quantize!(note::AbstractNote, grid, tpq::Integer)
-```
-Quantize the given notes on the given `grid`.
-
-Each note is quantized (relocated) to its closest point of the `grid`, by first
-identifying that point using [`classify`](@ref).
-It is assumed that the grid is the same for all quarter notes of the track.
-
-This function respects the notes absolute position and quantizes in absolute position,
-not relative.
-
-See also [`quantize`](@ref).
-"""
 function quantize!(note::AbstractNote, grid, tpq::Integer)
 
     number_of_quarters = div(note.position, tpq)
@@ -104,8 +87,19 @@ function quantize!(notes::Notes, grid)
 end
 
 """
-    quantize(notes::Notes, grid) -> qnotes
-Same as [`quantize!`](@ref) but returns new `qnotes` instead of operating in-place.
+```julia
+quantize(notes::Notes, grid)
+quantize(note::AbstractNote, grid, tpq::Integer)
+```
+Return a quantized copy of the given notes on the given `grid`, which can be any
+sorted iterable that starts on `0` and ends on `1`.
+
+Each note is quantized (relocated) to its closest point of the `grid`, by first
+identifying that point using [`classify`](@ref).
+It is assumed that the grid is the same for all quarter notes of the track.
+
+This function respects the notes' absolute position and quantizes in absolute position,
+not relative.
 """
 function quantize(notes::Notes, grid)
     qnotes = deepcopy(notes)
