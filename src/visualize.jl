@@ -1,3 +1,5 @@
+using Requires
+
 identimap = Dict{UInt8, UInt8}()
 for i = 0:255
     push!(identimap, i => i)
@@ -48,7 +50,7 @@ function velcol(minvel, maxvel, vel)
     return string(round(rvel,4))
 end
 
-using Requires
+
 @require PyPlot begin
 
 function tobenamed(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
