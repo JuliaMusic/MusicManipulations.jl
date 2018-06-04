@@ -233,3 +233,5 @@ function td50_velquant_interval(notes::MIDI.Notes{N}, numintervals::Int) where {
     sort!(newnotes.notes, lt=((x, y)->x.position<y.position))
     return newnotes
 end
+
+end
