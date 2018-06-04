@@ -1,11 +1,19 @@
 using Requires
 
+# the identity function as dictionary
 identimap = Dict{UInt8, UInt8}()
 for i = 0:255
     push!(identimap, i => i)
 end
 
-function notename(i)
+"""
+    notename(i::Int)
+
+Get a string representation of the name of a note characterized by its
+MIDI pitch i.
+Example: notename(2) -> \"C#0\"
+"""
+function notename(i::Int)
     res = ""
     t = i % 12
     if t == 0
@@ -37,12 +45,14 @@ function notename(i)
     return res
 end
 
+# the standard note names for all 255 pitches in a dictionary
 standardnames = Dict{UInt8, String}()
 for i = 0:255
     push!(standardnames, i => notename(i))
 end
 
-function velcol(minvel, maxvel, vel)
+# compute a correponding color out of the given velocity information
+function velcol(minvel::UInt, maxvel::UInt, vel::UInt)
     # map the velocities to the interval [0.1, 0.9]
     rvel = vel - minvel
     rvel /= (maxvel - minvel)
@@ -52,7 +62,31 @@ end
 
 
 @require PyPlot begin
+"""
+    tobenamed(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
 
+Visualize the `notes` by plotting them as lines in a pitch over ticks diagram.
+The duration of a `Note` is represented by the length of the correspondin line.
+
+Optional argument `grid`:
+Additionally plot vertical lines at the positions specified by grid. The beginning
+of a beat is marked by a darker line.
+
+Keyword arguments:
+    - `ticknames`:
+    Change the ticks labels of the pitches to be arbitrary strings. Provide a
+    dictionary with the pitches you'd like to assign a label as keys and the
+    labels as values. If you leave out pitches, they will be named like standard
+    MIDI notes.
+    - `reorder`:
+    For better readability you can change the pitches to be mapped to different
+    values on the y-axis. Provide a dictionary with the pitches you'd like to
+    reorder as keys and the new values they shall be mapped to as values.
+    BE CAREFUL, if you map multiple pitches to one value, strange things can happen.
+    The reordering does not affect the relabeling via `ticknames` (reordered
+    notes get the labels of the original pitch) and if you leave out pitches
+    they will just stay where they were. 
+"""
 function tobenamed(notes::MIDI.Notes, grid = 0:1//notes.tpq:1; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
 
 # positions of the notes separated by velocities (for plotting in different colors)
