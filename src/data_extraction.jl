@@ -13,11 +13,29 @@ function firstnotes(notes::Notes{N}, grid) where {N<:AbstractNote}
 
     clas = classify(notes, grid)
 
+    # Notes with dif == 0 belong to the same grid bin
     dif = clas[2:end] - clas[1:end-1]
 
-    toadd = notes.notes[2:end][dif .!= 0]
-    clas[1] != clas[2] && unshift!(toadd, notes[1])
+    posdif = [Int(notes[j].position - notes[j-1].position) for j in 2:length(notes)]
+    # minpos is the minimum position difference notes can have while being in the
+    # same quarter note
+    tpq = notes.tpq
+    minpos = tpq - tpq*(grid[end] - grid[end-1] + grid[2] - grid[1])/2
 
+    # The first notes are notes that have dif == 0 OR posdif > minpos
+    toadd = Vector{Note}()
+    for j in 1:length(notes)-1
+        if (dif[j] == 0 && posdif[j] > minpos) || dif[j] != 0
+            push!(toadd, notes[j+1])
+        end
+    end
+
+    # Take care of first note in notes:
+    if clas[1] != clas[2] || notes[2].position - notes[1].position > minpos
+        unshift!(toadd, notes[1])
+    elseif notes[2].position < notes[1].position
+        toadd[1] = notes[1]
+    end
     return Notes(toadd, notes.tpq)
 end
 
