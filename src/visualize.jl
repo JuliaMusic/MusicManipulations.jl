@@ -6,49 +6,11 @@ for i = 0:255
     push!(identimap, i => i)
 end
 
-"""
-    notename(i::Int)
-
-Get a string representation of the name of a note characterized by its
-MIDI pitch i.
-Example: notename(2) -> \"C#0\"
-"""
-function notename(i::Int)
-    res = ""
-    t = i % 12
-    if t == 0
-        res *= "C"
-    elseif t == 1
-        res *= "C#"
-    elseif t == 2
-        res *= "D"
-    elseif t == 3
-        res *= "D#"
-    elseif t == 4
-        res *= "E"
-    elseif t == 5
-        res *= "F"
-    elseif t == 6
-        res *= "F#"
-    elseif t == 7
-        res *= "G"
-    elseif t == 8
-        res *= "G#"
-    elseif t == 9
-        res *= "A"
-    elseif t == 10
-        res *= "A#"
-    elseif t == 11
-            res *= "B"
-    end
-    res *= string(floor(Int,i/12))
-    return res
-end
 
 # the standard note names for all 255 pitches in a dictionary
 standardnames = Dict{UInt8, String}()
 for i = 0:255
-    push!(standardnames, i => notename(i))
+    push!(standardnames, i => MIDI.pitchname(i))
 end
 
 # compute a correponding color out of the given velocity information
@@ -90,9 +52,9 @@ Keyword arguments:
 function tobenamed(notes::MIDI.Notes, grid = nothing; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
 
 # positions of the notes separated by velocities (for plotting in different colors)
-x1 = Dict{UInt, Vector{UInt}}()
-x2 = Dict{UInt, Vector{UInt}}()
-y = Dict{UInt, Vector{UInt}}()
+x1 = Dict{UInt, Vector{UInt}}() #starts of notes
+x2 = Dict{UInt, Vector{UInt}}() #ends of notes
+y = Dict{UInt, Vector{UInt}}() #pitches
 
 # collect note information
 for note in notes
