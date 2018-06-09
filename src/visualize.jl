@@ -1,4 +1,11 @@
-using Requires
+export tobenamed
+
+mpl = PyPlot.matplotlib
+
+const norm = mpl[:colors][:Normalize](0.0, 1.0)
+const c_m = mpl[:cm][:viridis]
+const s_m = mpl[:cm][:ScalarMappable](cmap=c_m, norm=norm)
+s_m[:set_array]([])
 
 # the identity function as dictionary
 identimap = Dict{UInt8, UInt8}()
@@ -6,24 +13,12 @@ for i = 0:255
     push!(identimap, i => i)
 end
 
-
 # the standard note names for all 255 pitches in a dictionary
 standardnames = Dict{UInt8, String}()
 for i = 0:255
     push!(standardnames, i => MIDI.pitchname(i))
 end
 
-# compute a correponding color out of the given velocity information
-function velcol(minvel::UInt, maxvel::UInt, vel::UInt)
-    # map the velocities to the interval [0.1, 0.9]
-    rvel = vel - minvel
-    rvel /= (maxvel - minvel)
-    rvel = 0.8 * rvel + 0.1
-    return string(round(rvel,4))
-end
-
-
-@require PyPlot begin
 """
     tobenamed(notes::Notes [, grid]; kwargs...)
 
@@ -124,17 +119,27 @@ end
 
 # get min and max vel to get ready for plotting
 vels = keys(y)
-minvel = minimum(vels)
 maxvel = maximum(vels)
 
 #initialize figure
-f = PyPlot.figure("Some well describing name")
-ax = PyPlot.axes()
+f = PyPlot.figure()
+ax = PyPlot.gca()
 
 #plotting action
 for vel in vels
-    PyPlot.plot([x1[vel], x2[vel]], [y[vel], y[vel]], color = velcol(minvel, maxvel, vel), lw = 3)
+    PyPlot.plot([x1[vel], x2[vel]], [y[vel], y[vel]],
+    color = s_m[:to_rgba](vel/maxvel), lw = 3)
 end
+
+# function rectangle(x, y, dx, vel)
+#     mpl[:patches][:Rectangle]((x, y), 30, 1,
+#     facecolor = s_m[:to_rgba](vel/maxvel), edgecolor = "black", lw = 0.5)
+# end
+#
+#
+# patches = [rectangle(x1[vel], y[vel], x2[vel], vel) for vel in vels]
+# ax[:add_collection](mpl[:collections][:PatchCollection](patches))
+
 
 # handle grid
 if grid != nothing
@@ -155,11 +160,8 @@ end
 ax[:set_ylim](minpit-0.5, maxpit+0.5)
 ax[:set_yticks](tickrange)
 ax[:set_yticklabels](tickstrings)
-ax[:set_title]("Some well describing name")
 ax[:set_xlabel]("Time in ticks")
 ax[:set_ylabel]("Pitch")
 f[:tight_layout]()
-
-end
 
 end

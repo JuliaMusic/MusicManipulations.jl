@@ -11,7 +11,11 @@ include("data_extraction.jl")
 include("jazz.jl")
 include("drums.jl")
 include("timeseries.jl")
-include("visualize.jl")
+
+using Requires
+@require PyPlot begin
+    include("visualize.jl")
+end
 
 export Jazz, Drums
 
