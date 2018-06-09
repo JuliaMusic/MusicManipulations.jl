@@ -118,7 +118,9 @@ const MAP_TD50 = Dict{UInt8,String}(
     0x24=>"Kick",
     0x25=>"Snare RimClick",
     0x26=>"Snare",
+    0x27=>"Tom 4 Rimshot",
     0x28=>"Snare Rimshot",
+    0x29=>"Tom 4",
     0x2a=>"Hihat Head (closed)",
     0x2b=>"Tom 3",
     0x2c=>"Hihat Foot Close",
@@ -140,13 +142,15 @@ const MAP_TD50 = Dict{UInt8,String}(
 const ALLPITCHES_TD50 = collect(keys(MAP_TD50))
 
 # Map the pitches to numbers for plotting in a graph
-const GRAPHMAP_TD50 = Dict{UInt8,UInt8}(
+const REORDER_TD50 = Dict{UInt8,UInt8}(
     0x16=>8,
     0x1a=>5,
     0x24=>0,
     0x25=>3,
     0x26=>1,
+    0x27=>19,
     0x28=>2,
+    0x29=>18,
     0x2a=>7,
     0x2b=>16,
     0x2c=>6,
@@ -154,27 +158,18 @@ const GRAPHMAP_TD50 = Dict{UInt8,UInt8}(
     0x2e=>4,
     0x2f=>15,
     0x30=>12,
-    0x31=>18,
+    0x31=>20,
     0x32=>13,
     0x33=>9,
-    0x34=>19,
+    0x34=>21,
     0x35=>11,
-    0x37=>18,
-    0x39=>19,
+    0x37=>20,
+    0x39=>21,
     0x3a=>17,
     0x3b=>10)
 
-# names of Instruments (order according to graphmap) for updating ticks in graph
-const GRAPHTICKS_TD50 =    ["Kick","Snare","Snare Rimshot","Snare RimClick","Hihat Head",
-                 "Hihat Rim","Hihat Foot Close","Hihat Head (closed)",
-                 "Hihat Rim (closed)","Ride Head","Ride Rim",
-                 "Ride Bell","Tom 1","Tom 1 Rimshot","Tom 2",
-                 "Tom 2 Rimshot","Tom 3","Tom 3 Rimshot","Cymbal 1","Cymbal 2"]
-
-
-
 ###############################################################################
-#drum things
+#velocity quantization
 ###############################################################################
 
 """
@@ -184,10 +179,10 @@ Divide the velocity range in `numintervals` intervals and quantize the
 velocities of each `Note` to the mean value of all notes of the corresponding
 instrument in this interval.
 """
-function td50_velquant_interval(notes::MIDI.Notes, numintervals::Int)
+function td50_velquant_interval(notes::MIDI.Notes{N}, numintervals::Int) where {N}
     #get notes separated by pitches
     sep = separatepitches(notes)
-    newnotes = Notes{MoreVelNote}(Vector{MoreVelNote}[], notes.tpq)
+    newnotes = MIDI.Notes{N}(Vector{N}(), notes.tpq)
 
     for pitch in keys(sep)
         #short acces to needed notes
@@ -238,56 +233,5 @@ function td50_velquant_interval(notes::MIDI.Notes, numintervals::Int)
     sort!(newnotes.notes, lt=((x, y)->x.position<y.position))
     return newnotes
 end
-
-"""
-    td50_velquant_peaks(notes::MIDI.Notes, class::Dict{UInt8,VPinfo})
-
-Quantize the velocities of each instruments to the velocities of the Histograms
-peaks. Histogram classification must be provided in `class`, if not, nothing changes.
-"""
-function td50_velquant_peaks(notes::MIDI.Notes, class)#::Dict{UInt8,VPinfo})
-    newnotes = Notes{MoreVelNote}(Vector{MoreVelNote}[], notes.tpq)
-    sep = separatepitches(notes)
-
-    for (pitch,notes) in sep
-
-        #if quantize information supplied
-        if haskey(class,pitch)
-            vp = class[pitch]
-
-            if length(vp.peaks) == 1    #trivial case (only one peak)
-                for note in sep[pitch]
-                    note.velocity = vp.peaks[1]
-                    push!(newnotes.notes,note)
-                end
-
-            else                        #find corresponding peak
-                for note in sep[pitch]
-                    vall = 1
-                    while vp.valleys[vall] < note.velocity
-                        vall += 1
-                    end
-                    peak = 1
-                    #still to do
-                    while peak < length(vp.peaks) && vp.peaks[peak+1] < vp.valleys[vall]
-                        peak += 1
-                    end
-                    note.velocity = vp.peaks[peak]
-                    push!(newnotes.notes,note)
-
-                end
-            end
-
-        #no quantization information -> do nothing with velocity
-        else
-            append!(newnotes.notes,notes)
-        end
-    end
-
-    #restore temporal order
-    sort!(newnotes.notes, lt=((x, y)->x.position<y.position))
-    return newnotes
-end
-
 
 end
