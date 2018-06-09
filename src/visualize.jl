@@ -1,4 +1,4 @@
-export tobenamed
+export noteplotter
 
 mpl = PyPlot.matplotlib
 
@@ -20,7 +20,7 @@ for i = 0:255
 end
 
 """
-    tobenamed(notes::Notes [, grid]; kwargs...)
+    noteplotter(notes::Notes [, grid]; kwargs...)
 
 Visualize the `notes` by plotting them as lines in a pitch over ticks diagram.
 The duration of a `Note` is represented by the length of the corresponding line.
@@ -44,7 +44,7 @@ Keyword arguments:
     notes get the labels of the original pitch) and if you leave out pitches
     they will just stay where they were.
 """
-function tobenamed(notes::MIDI.Notes, grid = nothing; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
+function noteplotter(notes::MIDI.Notes, grid = nothing; ticknames::Dict{UInt8, String} = standardnames, reorder::Dict{UInt8, UInt8} = identimap)
 
 # positions of the notes separated by velocities (for plotting in different colors)
 x1 = Dict{UInt, Vector{UInt}}() #starts of notes
