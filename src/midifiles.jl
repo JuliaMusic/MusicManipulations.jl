@@ -67,8 +67,10 @@ function replace_notes(oldtrack::MIDI.MIDITrack, notes::Notes)
     # Second track will contain the new `notes`
     MIDI.addnotes!(newtrack, notes)
 
+    eventindex = 0
+    eventtime = 0
     for j in 1:length(other_events)
-        MIDI.addevent!(newtrack, other_events_abspos[j], other_events[j])
+        eventindex, eventtime = MIDI.addevent_hint!(newtrack, other_events_abspos[j], other_events[j], eventindex, eventtime)
     end
 
     return newtrack
@@ -93,14 +95,12 @@ function getnotnotes(oldtrack::MIDI.MIDITrack)
     # Get pedal events with relative time and absolute time
     other_events = MIDI.MIDIEvent[]
     other_events_abspos = Int[]
+    abstime = 0
     for i in 1:length(old_events)
+        abstime += old_events[i].dT
         if typeof(old_events[i]) == MIDI.MIDIEvent
             # skip NOTEON and NOTEOFF events of first channel
             if old_events[i].status != 0x80 && old_events[i].status != 0x90
-                # Get absolute time of event
-                # This line can be made much more efficient!
-                abstime = sum(old_events[k].dT for k in 1:i)
-
                 push!(other_events, old_events[i])
                 push!(other_events_abspos, abstime)
             end
