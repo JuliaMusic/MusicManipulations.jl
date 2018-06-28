@@ -67,11 +67,7 @@ function replace_notes(oldtrack::MIDI.MIDITrack, notes::Notes)
     # Second track will contain the new `notes`
     MIDI.addnotes!(newtrack, notes)
 
-    eventindex = 0
-    eventtime = 0
-    for j in 1:length(other_events)
-        eventindex, eventtime = MIDI.addevent_hint!(newtrack, other_events_abspos[j], other_events[j], eventindex, eventtime)
-    end
+    addevents!(newtrack, other_events_abspos, other_events)
 
     return newtrack
 end
