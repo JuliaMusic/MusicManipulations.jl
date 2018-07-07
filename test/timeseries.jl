@@ -1,3 +1,5 @@
+using Statistics
+
 @testset "Velocity timeseries" begin
 
     # test object: onbeat notes with velocity ascending from 0 to 159

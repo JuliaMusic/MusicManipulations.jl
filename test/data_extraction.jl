@@ -1,3 +1,5 @@
+let
+
 rnotes = randomnotes(1000)
 
 @testset "purge/separate pitches" begin
@@ -19,4 +21,5 @@ rnotes = randomnotes(1000)
 
     @test sort(collect(keys(sep))) == sort(unique(pitches(rnotes)))
     @test sepa == coun
+end
 end

@@ -1,3 +1,4 @@
+let
 midi = readMIDIfile("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
@@ -24,7 +25,7 @@ sixteenths = [0, 1//4, 2//4, 3//4, 1]
     640]
 
     @test length(class) == length(notes)
-    @test findin(class .== 2, true) == inbetw
+    @test findall(class .== 2) == inbetw
 
     @test sum( sum( class .== n ) for n in 1:4) == length(notes)
 end
@@ -52,4 +53,5 @@ end
 
     @test positions(notes) !== positions(qnotes)
     @test mod.(qpos, 320) == zeros(length(notes))
+end
 end
