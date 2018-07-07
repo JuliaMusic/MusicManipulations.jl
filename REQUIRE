@@ -1,4 +1,4 @@
-julia 0.7-beta
+julia 0.7-alpha
 MIDI 0.5
 Reexport
 Requires
