@@ -1,3 +1,5 @@
+let
+
 midi = readMIDIfile("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
@@ -9,7 +11,6 @@ notes = getnotes(piano, midi.tpq)
     notes = getnotes(midi.tracks[2])
 
     @test length(notes.notes) > 1
-    @test start(notes) == 1
     @test notes.tpq == 960
 
     @testset "extract numbers" begin
@@ -42,4 +43,5 @@ end
     end
 
     @test velocities(notes) !== velocities(newnotes)
+end
 end

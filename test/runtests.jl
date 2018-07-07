@@ -1,8 +1,6 @@
-if current_module() == Main
-    using MusicManipulations
-end
+using MusicManipulations
 using MIDI
-using Base.Test
+using Test
 
 cd(@__DIR__)
 

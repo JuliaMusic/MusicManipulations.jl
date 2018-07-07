@@ -13,7 +13,7 @@ include("drums.jl")
 include("timeseries.jl")
 
 using Requires
-@require PyPlot begin
+@require PyPlot="d330b81b-6aea-500a-939a-2ce795aea3ee" begin
     include("visualize.jl")
 end
 

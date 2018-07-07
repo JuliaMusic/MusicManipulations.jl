@@ -36,10 +36,8 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
         c += 1
     end
 
-    # Empty timeseries
     ts = zeros(Float64, size(tvec))
 
-    # Start looping over notes
     i = previdx = 1; L = length(pos)
     while i ≤ L
         # find entries of same grid bin
@@ -58,6 +56,7 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
         # find pos[i] in tvec
         idx = findfirst(x -> x == pos[i], tvec)
         ts[idx] = val
+
         # TODO: For pitch, change zeros of intermediate entries
         # to pitch of previous notes
 
