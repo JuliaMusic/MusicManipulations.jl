@@ -1,3 +1,4 @@
+authors = ["George Datseris <datseris.george@gmail.com>", "Lennart Jahn <l.jahn@stud.uni-goettingen.de>"]
 name = "MusicManipulations"
 repo = "https://github.com/JuliaMusic/MusicManipulations.jl.git"
 version = "0.1.0"
