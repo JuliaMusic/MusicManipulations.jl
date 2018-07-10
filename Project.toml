@@ -1,6 +1,7 @@
 name = "MusicManipulations"
 repo = "https://github.com/JuliaMusic/MusicManipulations.jl.git"
 version = "0.1.0"
+uuid = "0696f8b0-8469-11e8-2dd1-81a184564249"
 
 [deps]
 MIDI = "f57c4921-e30c-5f49-b073-3f2f2ada663e"
