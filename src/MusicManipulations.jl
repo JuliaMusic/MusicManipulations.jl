@@ -1,8 +1,8 @@
 module MusicManipulations
 
-using Reexport
-@reexport using MIDI
-
+# using Reexport
+# @reexport using MIDI
+using MIDI
 import MIDI: Notes, Note
 
 include("midifiles.jl")

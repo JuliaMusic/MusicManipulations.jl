@@ -1,5 +1,5 @@
 module Jazz
-using MusicManipulations
+using MIDI, MusicManipulations
 
 """
 ```julia
