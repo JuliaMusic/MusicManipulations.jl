@@ -33,24 +33,6 @@ positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int(x.pitch) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
 
-function randomnotes(n::Int, tpq = 960, randchannel = false)
-    notes = Note[]
-    prevpos = 0
-    durran = 1:tpq
-    posran = 0:4*tpq
-    for i in 1:n
-        if randchannel
-            note = Note(rand(UInt8), rand(0:0x7F), prevpos + rand(posran), rand(durran), rand(0:127))
-        else
-            note = Note(rand(UInt8), rand(0:127), prevpos + rand(posran), rand(durran))
-        end
-        push!(notes, note)
-        prevpos = note.position
-    end
-    return Notes(notes, tpq)
-end
-
-
 """
     replace_notes(oldtrack::MIDITrack, notes::Notes) -> newtrack
 Create a *new* midi track that copies all `MIDIEvent`s that
