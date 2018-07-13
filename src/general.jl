@@ -23,18 +23,23 @@ end
     translate(notes::Notes, ticks) -> tnotes
 Translate the `notes` for the given amount of `ticks`.
 """
-translate(notes::Notes, ticks) = [Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
+translate(notes::Notes, ticks) = Notes(
+[Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes],
+notes.tpq)
 
 """
     transpose(notes::Notes, semitones) -> tnotes
 Transpose the `notes` for the given amount of `semitones`.
 """
-transpose(notes::Notes, semitones) = [Note(n.pitch + semitones, n.velocity, n.position, n.duration, n.channel) for n in notes]
+transpose(notes::Notes, semitones) = Notes(
+[Note(n.pitch + semitones, n.velocity, n.position, n.duration, n.channel) for n in notes],
+notes.tpq)
 
 """
     subdivision(n::Int, tpq)
 Return how many ticks is the duration of
-the subdivision of a 4/4-bar into `n` equal parts.
+the subdivision of a 4/4-bar into `n` equal parts, assuming the ticks per quarter
+note are `tpq`.
 
 For example, for sixteenth notes you would do `subdivision(16, tpq)`, for
 eigth-note triplets `subdivision(12, tpq)` and so on.
