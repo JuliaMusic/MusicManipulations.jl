@@ -2,9 +2,9 @@ export noteplotter
 
 mpl = PyPlot.matplotlib
 
-const norm = mpl[:colors][:Normalize](0.0, 1.0)
+const norm_mpl = mpl[:colors][:Normalize](0.0, 1.0)
 const c_m = mpl[:cm][:viridis]
-const s_m = mpl[:cm][:ScalarMappable](cmap=c_m, norm=norm)
+const s_m = mpl[:cm][:ScalarMappable](cmap=c_m, norm_mpl=norm_mpl)
 s_m[:set_array]([])
 
 # the identity function as dictionary
