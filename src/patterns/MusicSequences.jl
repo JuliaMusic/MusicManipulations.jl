@@ -7,11 +7,12 @@ export random_sequence, all_possible_sums
 
 struct DeadEndMotifs <: Exception
   tries::Int
-  recursion::Int
+  summands::Int
+  tailcut::Int
 end
 Base.showerror(io::IO, e::DeadEndMotifs) = print(io,
 "DeadEndMotifs ERROR: Couldn't find a proper sequence with $(e.tries) random tries, "*
-"each with a recursion level of $(e.recursion).")
+"each with summands up to $(e.summands) (total tailcuts: $(e.tailcut)).")
 
 function minimum_subdivision(motifs::Vector{Notes{N}}) where {N}
     Int(minimum(minimum(n.duration for n in notes) for notes in motifs))
@@ -57,7 +58,8 @@ function _random_sequence_try(motiflens, q)
     return seq, seq_length
 end
 
-function random_sequence(motifs::Vector{<:Notes}, q; tries = 5, recursion = 3)
+function random_sequence(motifs::Vector{<:Notes}, q;
+    tries = 5, summands = 3, tailcut = 2)
 
     q % minimum_subdivision(motifs) == 0 || throw(ArgumentError("
     Given window `q` is not divisible by the minimum subdivision present in `motifs`."))
@@ -65,19 +67,19 @@ function random_sequence(motifs::Vector{<:Notes}, q; tries = 5, recursion = 3)
     idxs = 1:length(motifs)
     motifs0, motiflens = _motifs_at_origin(motifs)
 
-    worked = false; count = 0
+    worked = false; count = 0; seq = Int[]
     while worked == false
-        count > tries && throw(DeadEndMotifs(tries, recursion))
+        count > tries && throw(DeadEndMotifs(tries, summands, tailcut))
 
         seq, seq_length = _random_sequence_try(motiflens, q)
-        worked = complete_sequence!(seq, motifs0, motiflens, q, recursion)
+        worked = complete_sequence!(seq, motifs0, motiflens, q, summands, tailcut)
         count += 1
     end
 
     return _instantiate_sequence(motifs0, motiflens, seq)
 end
 
-function complete_sequence!(seq, motifs0, motiflens, q, recursion)
+function complete_sequence!(seq, motifs0, motiflens, q, summands, tailcut)
 
     remainder = q - sum(motiflens[k] for k in seq)
     if remainder == 0
@@ -89,7 +91,7 @@ function complete_sequence!(seq, motifs0, motiflens, q, recursion)
         # We find the possible motifs, pick a random one, and pick
         # a random position in the sequence that it exists.
         # Delete that entry of the sequence.
-        mi = rand(findall((in)(remainder), motiflens))
+        mi = rand(findall((in)(-remainder), motiflens))
         possible = findall((in)(mi), seq)
         if !isempty(possible)
             deleteat!(seq, rand(possible))
@@ -98,18 +100,26 @@ function complete_sequence!(seq, motifs0, motiflens, q, recursion)
     else
         # Case 2: Recursive deletion of last entry of the sequence, and trying to
         # see if it can be completed with some combination of existing motifs
-        req = 0
-        uniquelens = unique(motiflens)
-
-        while req < recursion
-            req += 1
+        tcut = 0
+        while tcut < tailcut
+            tcut += 1
             pop!(seq)
-            if remainder ∈ motiflens
-                mi = rand(findall((in)(remainder), motiflens))
-                push!(seq, mi)
-                return true
-            else
-                allsums = all_possible_sums(uniquelens, (req+1)÷2 + 1)
+            remainder = q - sum(motiflens[k] for k in seq)
+            for n in 2:summands
+                if remainder ∈ motiflens
+                    mi = rand(findall(in(remainder), motiflens))
+                    push!(seq, mi)
+                    return true
+                else
+                    everything = all_possible_sums(motiflens, n)
+                    sums = [e[1] for e in everything]
+                    if remainder ∈ sums
+                        j = rand(findall(in(remainder), sums))
+                        vals = everything[j][2]
+                        push!(seq, idxs_of_vals...)
+                        return true
+                    end
+                end
             end
         end
     end
