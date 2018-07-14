@@ -1,27 +1,26 @@
 # module MusicSequences
 # using MusicManipulations
 
-using Combinatorics
+using Base.Iterators
 
-export random_sequence
+export random_sequence, all_possible_sums
 
 struct DeadEndMotifs <: Exception
   tries::Int
   recursion::Int
 end
-Base.show(io::IO, e::DeadEndMotifs) = print(io,
-"Couldn't find a proper sequence with $(e.tries) random tries, "*
+Base.showerror(io::IO, e::DeadEndMotifs) = print(io,
+"DeadEndMotifs ERROR: Couldn't find a proper sequence with $(e.tries) random tries, "*
 "each with a recursion level of $(e.recursion).")
 
 function minimum_subdivision(motifs::Vector{Notes{N}}) where {N}
     Int(minimum(minimum(n.duration for n in notes) for notes in motifs))
 end
 
-
-function timesort(notes::Notes)
-    issorted(notes, by = x -> x.position) && return notes
-    return Notes(sort(notes.notes, by = x -> x.position), notes.tpq)
-end
+# function timesort(notes::Notes)
+#     issorted(notes, by = x -> x.position) && return notes
+#     return Notes(sort(notes.notes, by = x -> x.position), notes.tpq)
+# end
 
 function motif_limits(notes::Notes)
     start = minimum(n.position for n in notes)
@@ -117,12 +116,11 @@ function complete_sequence!(seq, motifs0, motiflens, q, recursion)
     return false
 end
 
-
-
-function all_possible_sums(uniquelens, n)
+function all_possible_sums(summands, n)
+    map(x -> (sum(x), x),
+        reduce((x1, x2) -> vcat(x1, vec(collect(product(fill(summands, x2)...)))), n;
+        init = Vector{Tuple{Int, NTuple{n, Int}}}[]))
 end
-
-
 
 function _instantiate_sequence(motifs0::Vector{Notes{N}}, motiflens, seq) where N<:AbstractNote
     notvec = N[]
