@@ -2,6 +2,10 @@ import Base.transpose
 
 export translate, transpose, randomnotes, subdivision
 
+"""
+    randomnotes(n::Int, tpq = 960)
+Generate some random notes that start sequentially.
+"""
 function randomnotes(n::Int, tpq = 960, randchannel = false)
     notes = Note[]
     prevpos = 0
@@ -20,20 +24,20 @@ function randomnotes(n::Int, tpq = 960, randchannel = false)
 end
 
 """
-    translate(notes::Notes, ticks) -> tnotes
+    translate(notes, ticks)
 Translate the `notes` for the given amount of `ticks`.
 """
-translate(notes::Notes, ticks) = Notes(
-[Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes],
-notes.tpq)
+translate(notes::Notes, ticks) = Notes(translate(notes.notes, ticks), notes.tpq)
+translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
+[Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
 
 """
-    transpose(notes::Notes, semitones) -> tnotes
+    transpose(notes, semitones)
 Transpose the `notes` for the given amount of `semitones`.
 """
-transpose(notes::Notes, semitones) = Notes(
-[Note(n.pitch + semitones, n.velocity, n.position, n.duration, n.channel) for n in notes],
-notes.tpq)
+transpose(notes::Notes, semitones) = Notes(transpose(notes.notes, semitones), notes.tpq)
+transpose(notes::Vector{N}, semitones) where {N<:AbstractNote} =
+[Note(n.pitch + semitones, n.velocity, n.position, n.duration, n.channel) for n in notes]
 
 """
     subdivision(n::Int, tpq)
