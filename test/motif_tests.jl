@@ -1,7 +1,8 @@
 @testset "Random Notes Sequence"
 
     # Dummy sequence
-    sixt = subdivision(16, 960)
+    tpq = 960
+    sixt = subdivision(16, tpq)
     snare = 0x26
     tom1 = 0x30
     tom3 = 0x2b
@@ -33,14 +34,14 @@
     Note(snare, 100, 3sixt, sixt),
     ]
 
-    motifs = Notes.([motif1, motif2, motif3, motif4], 960)
+    motifs = Notes.([motif1, motif2, motif3, motif4], tpq)
 
 
     for q = [20, 30]
-        notes = random_notes_sequence(motifs, q*960)
+        notes = random_notes_sequence(motifs, q*tpq)
 
         @test length(notes) == 4*q
-        @test Int(notes[end].position+notes[end].duration) == q*960
+        @test Int(notes[end].position+notes[end].duration) == q*tpq
     end
 
     @test_throws ArgumentError random_notes_sequence(motifs, 50)
