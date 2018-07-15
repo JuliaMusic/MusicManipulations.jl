@@ -49,3 +49,8 @@ For example, for sixteenth notes you would do `subdivision(16, tpq)`, for
 eigth-note triplets `subdivision(12, tpq)` and so on.
 """
 subdivision(n::Int, tpq)::Int = (4*tpq)/n
+
+function timesort(notes::Notes)
+    issorted(notes, by = x -> x.position) && return notes
+    return Notes(sort(notes.notes, by = x -> x.position), notes.tpq)
+end
