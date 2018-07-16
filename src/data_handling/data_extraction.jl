@@ -32,7 +32,7 @@ function firstnotes(notes::Notes{N}, grid) where {N<:AbstractNote}
 
     # Take care of first note in notes:
     if clas[1] != clas[2] || notes[2].position - notes[1].position > minpos
-        unshift!(toadd, notes[1])
+        pushfirst!(toadd, notes[1])
     elseif notes[2].position < notes[1].position
         toadd[1] = notes[1]
     end
