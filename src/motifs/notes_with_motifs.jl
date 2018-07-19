@@ -21,8 +21,8 @@ This function uses [`random_sequence`](@ref) from the module
 function random_notes_sequence(motifs::Vector{Notes{N}}, q) where N
 
     tpq = motifs[1].tpq
-    any(x -> x != tpq, notes.tpq for notes in motifs) && throw(ArgumentError("
-    The pool of motifs does no share the same `tpq`."))
+    any(x -> x != tpq, notes.tpq for notes in motifs) && throw(ArgumentError(
+    "The pool of motifs does no share the same `tpq`."))
 
     res, seq = random_sequence(motifs, q, notes_limits, translate)
     ret = N[]
