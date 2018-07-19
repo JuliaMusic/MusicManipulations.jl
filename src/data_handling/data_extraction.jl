@@ -1,4 +1,4 @@
-export getfirstnotes, purgepitches!, purgepitches, separatepitches, firstnotes
+export getfirstnotes, purgepitches, separatepitches, firstnotes
 
 """
     firstnotes(notes, grid)
@@ -40,47 +40,48 @@ function firstnotes(notes::Notes{N}, grid) where {N<:AbstractNote}
 end
 
 
-
-function purgepitches!(notes::Notes, allowedpitch::Array{UInt8})
-    deletes = Int[]
-    for i ∈ 1:length(notes)
-        !(notes[i].pitch ∈ allowedpitch) && push!(deletes, i)
-    end
-    deleteat!(notes.notes, deletes)
-    return notes
-end
-
-
 """
     purgepitches(notes::Notes, allowedpitch) -> newnotes
 
-Remove all notes that do not have a pitch specified in `allowedpitch`
-(`Array{UInt8}` or `UInt8` or `Int`).
+Remove all notes that do *not* have a pitch specified in `allowedpitch`.
 """
-purgepitches(notes::Notes, allowedpitch::Array{UInt8}) =
-    purgepitches!(deepcopy(notes), allowedpitch)
+function purgepitches(notes::Notes{N}, allowedpitch) where {N<:AbstractNote}
+    n = N[]
+    for i ∈ 1:length(notes)
+        notes[i].pitch ∈ allowedpitch && push!(n, deepcopy(notes[i]))
+    end
+    return Notes(n, notes.tpq)
+end
 
-purgepitches(notes::Notes, allowedpitch::UInt8) =
-    purgepitches(notes,[allowedpitch])
-
-purgepitches!(notes::Notes, allowedpitch::UInt8) =
-    purgepitches!(notes,[allowedpitch])
 
 
 """
-    separatepitches(notes::Notes)
+    separatepitches(notes::Notes [, pitches])
 
 Get a dictionary \"pitch\"=>\"notes of that pitch\".
+Optionally only keep pitches that are contained in `pitches`.
 """
 function separatepitches(notes::Notes{N}) where {N}
     separated = Dict{UInt8, Notes{N}}()
     for note in notes
-        if haskey(separated, note.pitch)
-            push!(separated[note.pitch], deepcopy(note))
-        else
-            push!(separated, note.pitch => Notes{N}(Vector{N}[], notes.tpq))
-            push!(separated[note.pitch], deepcopy(note))
-        end
+        _add_note_to_dict!(separated, note, notes.tpq)
     end
     return separated
+end
+
+function separatepitches(notes::Notes{N}, pitches) where {N}
+    separated = Dict{UInt8, Notes{N}}()
+    for note in notes
+        note.pitch ∈ pitches && _add_note_to_dict!(separated, note, notes.tpq)
+    end
+    return separated
+end
+
+function _add_note_to_dict!(separated, note::N, tpq) where {N<:AbstractNote}
+    if haskey(separated, note.pitch)
+        push!(separated[note.pitch], deepcopy(note))
+    else
+        separated[note.pitch] = Notes{N}(Vector{N}[], tpq)
+        push!(separated[note.pitch], deepcopy(note))
+    end
 end
