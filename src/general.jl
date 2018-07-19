@@ -1,6 +1,12 @@
 import Base.transpose
 
 export translate, transpose, randomnotes, subdivision
+export velocities, positions, pitches, durations
+
+velocities(notes::Notes) = [Int(x.velocity) for x in notes]
+positions(notes::Notes) = [Int(x.position) for x in notes]
+pitches(notes::Notes) = [Int(x.pitch) for x in notes]
+durations(notes::Notes) = [Int(x.duration) for x in notes]
 
 """
     randomnotes(n::Int, tpq = 960)

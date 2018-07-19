@@ -1,4 +1,4 @@
-export getfirstnotes, purgepitches, separatepitches, firstnotes
+export getfirstnotes, allowedpitches, separatepitches, firstnotes
 
 """
     firstnotes(notes, grid)
@@ -41,14 +41,14 @@ end
 
 
 """
-    purgepitches(notes::Notes, allowedpitch) -> newnotes
+    allowedpitches(notes::Notes, allowed) -> newnotes
 
-Remove all notes that do *not* have a pitch specified in `allowedpitch`.
+Only keep the notes that have a pitch specified in `allowed` (one or many pitches).
 """
-function purgepitches(notes::Notes{N}, allowedpitch) where {N<:AbstractNote}
+function allowedpitches(notes::Notes{N}, allowed) where {N<:AbstractNote}
     n = N[]
     for i ∈ 1:length(notes)
-        notes[i].pitch ∈ allowedpitch && push!(n, deepcopy(notes[i]))
+        notes[i].pitch ∈ allowed && push!(n, deepcopy(notes[i]))
     end
     return Notes(n, notes.tpq)
 end
@@ -56,10 +56,10 @@ end
 
 
 """
-    separatepitches(notes::Notes [, pitches])
+    separatepitches(notes::Notes [, allowed])
 
 Get a dictionary \"pitch\"=>\"notes of that pitch\".
-Optionally only keep pitches that are contained in `pitches`.
+Optionally only keep pitches that are contained in `allowed`.
 """
 function separatepitches(notes::Notes{N}) where {N}
     separated = Dict{UInt8, Notes{N}}()

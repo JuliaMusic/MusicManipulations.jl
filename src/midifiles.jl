@@ -28,11 +28,6 @@ mutable struct MoreVelNote <: AbstractNote
 end
 Notes(::Type{MoreVelNote}) = Notes{MoreVelNote}(Vector{MoreVelNote}[], 960)
 
-velocities(notes::Notes) = [Int(x.velocity) for x in notes]
-positions(notes::Notes) = [Int(x.position) for x in notes]
-pitches(notes::Notes) = [Int(x.pitch) for x in notes]
-durations(notes::Notes) = [Int(x.duration) for x in notes]
-
 """
     replace_notes(oldtrack::MIDITrack, notes::Notes) -> newtrack
 Create a *new* midi track that copies all `MIDIEvent`s that
