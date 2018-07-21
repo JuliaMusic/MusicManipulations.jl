@@ -13,7 +13,8 @@ end
 Create a random sequence from a pool of notes (`motifs`) such that
 it has total length exactly `q`. Notice that `q` is measured in **ticks**.
 
-Return the result as a single `Notes` container.
+Return the result as a single `Notes` container, and also return the sequence
+of motifs used.
 
 This function uses [`random_sequence`](@ref) from the module
 [`MotifSequenceGenerator`](@ref), adapted to the [`Notes`](@ref) struct.
@@ -29,7 +30,7 @@ function random_notes_sequence(motifs::Vector{Notes{N}}, q) where N
     for notes in res
         append!(ret, notes.notes)
     end
-    return Notes(ret, motifs[1].tpq)
+    return Notes(ret, motifs[1].tpq), seq
 end
 
 # function minimum_subdivision(motifs::Vector{M}) where {M<:Notes}
