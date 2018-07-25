@@ -1,6 +1,6 @@
 module Drums
 using MusicManipulations
-
+using MIDI: NOTEON, NOTEOFF
 # all pitches of digitally connected instruments that support extra velocities
 const DIGITAL = [0x26,0x28,0x33,0x35,0x3b]
 
