@@ -18,12 +18,9 @@ pitchdict = Dict(pitch => count(x->x == pitch, pit) for pitch in pit)
 end
 @testset "separate pitches" begin
     sep = separatepitches(rnotes)
-    sepa = Int[]
-    for pitch in unique(pitches(rnotes))
-        push!(sepa, length(sep[pitch]))
-    end
-
     @test sort(collect(keys(sep))) == sort(unique(pitches(rnotes)))
-    @test sepa == coun
+
+    @test sum(length(n) for n in values(sep)) == length(rnotes)
+
 end
 end
