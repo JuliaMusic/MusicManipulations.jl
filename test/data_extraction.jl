@@ -1,18 +1,22 @@
 let
 
 rnotes = randomnotes(1000)
+coun = Int[]
+pit = pitches(rnotes)
+pitchdict = Dict(pitch => count(x->x == pitch, pit) for pitch in pit)
 
-@testset "purge/separate pitches" begin
+@testset "allowed pitches" begin
 
-    pit = pitches(rnotes)
-    purg = Int[]
-    coun = Int[]
-    for pitch in unique(pitches(rnotes))
-        push!(purg, length(purgepitches(rnotes, UInt8(pitch))))
-        push!(coun, count(x->x == pitch, pit))
+    allowed = unique(pit)[1:2]
+    anotes = allowedpitches(rnotes, allowed)
+    @test length(anotes) > 0
+    @test length(anotes) == pitchdict[allowed[1]] + pitchdict[allowed[2]]
+    for note ∈ anotes
+        @test note.pitch ∈ allowed
     end
-    @test purg == coun
 
+end
+@testset "separate pitches" begin
     sep = separatepitches(rnotes)
     sepa = Int[]
     for pitch in unique(pitches(rnotes))
