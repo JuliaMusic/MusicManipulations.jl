@@ -11,7 +11,8 @@ end
 """
     random_notes_sequence(motifs::Vector{Notes{N}}, q, δq = 0)
 Create a random sequence from a pool of notes (`motifs`) such that
-it has total length exactly `q ± δq`. Notice that `q` is measured in **ticks**.
+it has total length `ℓ` exactly `q - δq ≤ ℓ ≤ q + δq`. 
+Notice that `q` is measured in **ticks**.
 
 Return the result as a single `Notes` container, and also return the sequence
 of motifs used.
