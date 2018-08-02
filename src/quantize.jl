@@ -111,7 +111,7 @@ function quantize(notes::Notes, grid, duration = true)
     return qnotes
 end
 
-function quantize_duration!(note::Note, grid, tpq)
+function quantize_duration!(note::AbstractNote, grid, tpq)
     durmod = mod(note.position + note.duration, tpq)
     best = closest_realgrid(grid, durmod, tpq)
     # Check if quantization removes duration

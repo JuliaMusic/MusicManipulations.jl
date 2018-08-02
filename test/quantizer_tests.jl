@@ -5,6 +5,7 @@ cd(@__DIR__)
 midi = readMIDIfile("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
+tpq = 960
 
 triplets = [0, 1//3, 2//3, 1]
 sixteenths = [0, 1//4, 2//4, 3//4, 1]
@@ -47,9 +48,13 @@ end
     @test qnotes.tpq == notes.tpq
     @test length(notes) == length(qnotes)
 
-    for f in (velocities, pitches, durations)
+    for f in (velocities, pitches)
         @test f(notes) == f(qnotes)
     end
+    @test durations(notes) != durations(qnotes)
+
+    qqnotes = quantize(notes, triplets, false)
+    @test durations(notes) == durations(qqnotes)
 
     pos = positions(notes)
     qpos = positions(qnotes)
