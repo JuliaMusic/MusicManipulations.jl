@@ -60,13 +60,17 @@ end
 
 @testset "quantize duration" begin
 
-    qnotes = quantize(notes, triplets)
+    for (i, grid) in enumerate([triplets, sixteenths])
 
-    dnotes = quantize_duration!(deepcopy(qnotes), grid)
+        qnotes = quantize(notes, grid)
 
-    for note in dnotes
-        @test note.duration != 0
-        @test mod(note.duration, tpq÷3) == 0
+        dnotes = quantize_duration!(deepcopy(qnotes), grid)
+
+        for note in dnotes
+            @test note.duration != 0
+            @test mod(note.duration, tpq÷(2+i)) == 0
+        end
+
     end
 
 end
