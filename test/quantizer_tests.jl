@@ -1,4 +1,7 @@
+using Test
+
 let
+cd(@__DIR__)
 midi = readMIDIfile("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
@@ -54,4 +57,18 @@ end
     @test positions(notes) !== positions(qnotes)
     @test mod.(qpos, 320) == zeros(length(notes))
 end
+
+@testset "quantize duration" begin
+
+    qnotes = quantize(notes, triplets)
+
+    dnotes = quantize_duration!(deepcopy(qnotes), grid)
+
+    for note in dnotes
+        @test note.duration != 0
+        @test mod(note.duration, tpq÷3) == 0
+    end
+
+end
+
 end

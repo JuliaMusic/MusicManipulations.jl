@@ -1,4 +1,4 @@
-export isgrid, classify, quantize, quantize!
+export isgrid, classify, quantize, quantize!, quantize_duration!
 ###############################################################################
 # Grid
 ###############################################################################
@@ -88,7 +88,7 @@ end
 
 """
 ```julia
-quantize(notes::Notes, grid)
+quantize(notes::Notes, grid, duration = true)
 quantize(note::AbstractNote, grid, tpq::Integer)
 ```
 Return a quantized copy of the given notes on the given `grid`, which can be any
@@ -98,11 +98,44 @@ Each note is quantized (relocated) to its closest point of the `grid`, by first
 identifying that point using [`classify`](@ref).
 It is assumed that the grid is the same for all quarter notes of the track.
 
+If `duration` is `true`, the function also quantizes the duration of the notes
+on the same grid.
+
 This function respects the notes' absolute position and quantizes in absolute position,
 not relative.
 """
-function quantize(notes::Notes, grid)
+function quantize(notes::Notes, grid, duration = true)
     qnotes = deepcopy(notes)
     quantize!(qnotes, grid)
+    duration && quantize_duration!(qnotes, grid)
     return qnotes
+end
+
+function quantize_duration!(note::Note, grid, tpq)
+    durmod = mod(note.position + note.duration, tpq)
+    best = closest_realgrid(grid, durmod, tpq)
+    # Check if quantization removes duration
+    final_dur = Int(grid[best]*tpq)
+    dist = final_dur - durmod
+    note.duration += final_dur - durmod
+    if note.duration == 0
+        if best != length(grid)
+            note.duration += (grid[best+1] - grid[best])*tpq
+        else
+            note.duration += grid[2]*tpq # grid[1] is always 0 by definition
+        end
+    end
+    return
+end
+
+"""
+    quantize_duration!(notes::Notes, grid)
+    quantize_duration!(note::Note, grid, tpq)
+Quantize the duration of given notes on the `grid`.
+"""
+function quantize_duration!(notes::Notes, grid)
+    for note in notes
+        quantize_duration!(note, grid, notes.tpq)
+    end
+    return notes
 end
