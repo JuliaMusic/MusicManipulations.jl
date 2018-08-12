@@ -15,7 +15,7 @@ function musescore(file, notes::Notes;
     tdir = tempdir()
     midi = writeMIDIfile(tdir*"/tempmid.mid", notes)
 
-    cmd = `$MUSESCORE -o $(file) $(tdir*"/tempmid.mid")`
+    cmd = `$MUSESCORE -n -T 10 -o $(file) $(tdir*"/tempmid.mid")`
 
     rm(tdir*"/tempmid.mid")
     pngname = basename(file)
