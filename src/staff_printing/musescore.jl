@@ -1,4 +1,4 @@
-using DefaultApplications
+using DefaultApplication
 
 const MUSESCORE = @static Sys.iswindows() ? "MuseScore" : "musescore"
 
@@ -15,12 +15,16 @@ function musescore(file, notes::Notes;
     tdir = tempdir()
     midi = writeMIDIfile(tdir*"/tempmid.mid", notes)
 
-    cmd = `$MUSESCORE -n -T 10 -o $(file) $(tdir*"/tempmid.mid")`
+	midipath = joinpath(tdir, "tempmid.mid")
+	@assert isfile(midipath)
+
+    cmd = `$MUSESCORE -n -T 10 -o $(file) $(midipath)`
+	run(cmd)
 
     rm(tdir*"/tempmid.mid")
     pngname = basename(file)
 
     muspng = file[1:end-4]*"-1.png"
 
-    display && DefaultApplications.open(muspng)
+    display && DefaultApplication.open(muspng)
 end
