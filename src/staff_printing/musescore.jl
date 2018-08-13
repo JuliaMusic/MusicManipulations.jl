@@ -1,12 +1,26 @@
-export musescore
-
+module MuseScore
 using DefaultApplication
 
 const MUSESCORE = @static Sys.iswindows() ? "MuseScore" : "musescore"
+const MUSESCORE_EXISTS = [false]
 
 function test_musescore()
-    r = run(`$(MUSESCORE) -v`)
-    @assert r.exitcode == 0
+    if !MUSESCORE_EXISTS[1]
+        r = try
+            r = run(`$(MUSESCORE) -v`)
+        catch
+            false
+        end
+        if r == false || ((typeof(r) == Base.Process) && r.exitcode != 0)
+            throw(SystemError(
+            """
+            The command `$(MUSESCORE) -v` did not run, which probably means that
+            MuseScore is not accessible from the command line. Please first install MuseScore
+            on your computer and then add it to your PATH."""
+            ))
+        end
+    end
+    global MUSESCORE_EXISTS[1] = true
 end
 
 """
@@ -18,10 +32,10 @@ which can be either a `.pdf` or a `.png`.
 Notice that MuseScore must be accessible from the command line for this function to
 work.
 """
-function musescore(file, notes; display = true, grid = nothing)
+function musescore(file, notes; display = true)
 
-    test_musescore()
     @assert file[end-3:end] ∈ (".png", ".pdf")
+    MUSESCORE_EXISTS[1] || test_musescore()
 
     tdir = tempdir()
     midi = writeMIDIfile(tdir*"/tempmid.mid", notes)
@@ -37,4 +51,7 @@ function musescore(file, notes; display = true, grid = nothing)
 	run(cmd)
     rm(tdir*"/tempmid.mid")
     display && DefaultApplication.open(muspng)
+    nothing
 end
+
+end#module
