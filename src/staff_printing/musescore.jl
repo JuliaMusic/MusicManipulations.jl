@@ -2,7 +2,7 @@ module MuseScore
 using MIDI
 using DefaultApplication
 
-const MUSESCORE = @static Sys.iswindows() ? "MuseScore" : "musescore"
+const MUSESCORE = @static Sys.iswindows() ? "MuseScore" : "mscore"
 const MUSESCORE_EXISTS = [false]
 
 function test_musescore()
@@ -30,10 +30,9 @@ Use the open source software "MuseScore" to create a score and save the
 output to `file`. By default it will also display the created `file`,
 which can be either a `.pdf` or a `.png`.
 
-If given a `.png` the actual file name will end with `-1`, `-2` etc
-for each page of the score.
-Notice that MuseScore must be accessible from the command line for this function to
-work.
+If given a `.png` the actual file name will end with `-1`, `-2` etc.
+for each page of the score. Notice that MuseScore must be accessible from the
+command line for this function to work.
 """
 function musescore(file, notes; display = true)
 
@@ -54,7 +53,6 @@ function musescore(file, notes; display = true)
 	run(cmd)
     rm(tdir*"/tempmid.mid")
     display && DefaultApplication.open(muspng)
-    nothing
 end
 
 end#module
