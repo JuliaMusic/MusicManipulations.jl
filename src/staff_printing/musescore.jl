@@ -1,4 +1,5 @@
 module MuseScore
+using MIDI
 using DefaultApplication
 
 const MUSESCORE = @static Sys.iswindows() ? "MuseScore" : "musescore"
