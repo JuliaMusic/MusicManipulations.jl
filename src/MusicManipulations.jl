@@ -16,6 +16,9 @@ include("specific_modules/drums.jl")
 
 include("motifs/notes_with_motifs.jl")
 
+include("staff_printing/musescore.jl")
+import .MuseScore: musescore; export musescore
+
 # using Requires
 # @require PyPlot="d330b81b-6aea-500a-939a-2ce795aea3ee" begin
 #     include("visualize.jl")
