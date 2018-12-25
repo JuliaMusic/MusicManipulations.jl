@@ -2,7 +2,7 @@ using Test
 
 let
 cd(@__DIR__)
-midi = readMIDIfile("serenade_full.mid")
+midi = readMIDIFile("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
 tpq = 960

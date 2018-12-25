@@ -40,7 +40,7 @@ function musescore(file, notes; display = true)
     MUSESCORE_EXISTS[1] || test_musescore()
 
     tdir = tempdir()
-    midi = writeMIDIfile(tdir*"/tempmid.mid", notes)
+    midi = writeMIDIFile(tdir*"/tempmid.mid", notes)
 	midipath = joinpath(tdir, "tempmid.mid")
 
     if file[end-3:end] == ".png"

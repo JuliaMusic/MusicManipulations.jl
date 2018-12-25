@@ -1,6 +1,6 @@
 let
 
-midi = readMIDIfile("serenade_full.mid")
+midi = readMIDIFile("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
 
@@ -22,7 +22,7 @@ end
 
 @testset "Replace Notes" begin
 
-    midi = readMIDIfile("serenade_full.mid")
+    midi = readMIDIFile("serenade_full.mid")
     notes2 = getnotes(midi.tracks[2])
     newtrack = deepcopy(midi.tracks[2])
     newnotes = getnotes(newtrack)
