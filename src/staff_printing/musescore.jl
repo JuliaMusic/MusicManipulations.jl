@@ -16,7 +16,8 @@ function test_musescore()
             throw(SystemError(
             """
             The command `$(MUSESCORE) -v` did not run, which probably means that
-            MuseScore is not accessible from the command line. Please first install MuseScore
+            MuseScore is not accessible from the command line.
+			Please first install MuseScore
             on your computer and then add it to your PATH."""
             ))
         end
@@ -53,6 +54,38 @@ function musescore(file, notes; display = true)
 	run(cmd)
     rm(tdir*"/tempmid.mid")
     display && DefaultApplication.open(muspng)
+end
+
+
+"""
+	MuseScore.DrumsPitches
+
+A dictionary that given the drum instrument as a string it returns the
+MIDI pitch that MuseScore uses.
+
+Notice that to import a MIDI file into MuseScore and the drumset to be the selected
+instrument, you should write the MIDI notes to channel `9`.
+"""
+const DrumsPitches = begin
+	a =
+	Dict(
+	"Acoustic Bass Drum" => "B1",
+	"Acoustic Snare" => "D2",
+	"Side Stick" => "C#2",
+	"Closed Hi-Hat" => "F#2",
+	"Open Hi-Hat" => "A#2",
+	"Pedal Hi-Hat" => "G#2",
+	"Ride Cymbal" => "D#3",
+	"Ride Bell" => "F3",
+	"Low-Mid Tom" => "B2",
+	"Cowbell" => "G#3",
+	"Tambourine" => "F#3",
+	"High Floor Tom" => "G2",
+	"Low Floor Tom" => "F2",
+	"Crash Cymbal 1" => "C#3",
+	"Crash Cymbal 2" => "A3"
+	)
+	b = Dict((k, name_to_pitch(a[k])) for k in keys(a))
 end
 
 end#module
