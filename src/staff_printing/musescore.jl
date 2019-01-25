@@ -58,7 +58,7 @@ end
 
 
 """
-	MuseScore.DrumsPitches
+	MuseScore.drumkey
 
 A dictionary that given the drum instrument as a string it returns the
 MIDI pitch that MuseScore uses.
@@ -66,7 +66,7 @@ MIDI pitch that MuseScore uses.
 Notice that to import a MIDI file into MuseScore and the drumset to be the selected
 instrument, you should write the MIDI notes to channel `9`.
 """
-const DrumsPitches = begin
+const drumkey = begin
 	a =
 	Dict(
 	"Acoustic Bass Drum" => "B1",
