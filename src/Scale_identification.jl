@@ -1,13 +1,10 @@
-using DelimitedFiles
-using Statistics
-using StatsBase
 using MIDI
-using MusicManipulations
+
 
 """
     MIDI_to_notes
 
-Returns the pitch of an array of MIDI note value, inside of single octave.
+Returns the note names of an array of MIDI pitch value, inside of single octave.
 
 Example :
 julia> Midi_to_notes([0,13,26])
@@ -46,55 +43,65 @@ end
 """
     ScaleIdentification(scales, notes::Array{})
 
-Takes an Array representing musical notes and returns the most probable scale it belongs to.
+Takes an Array of MIDI pitches (ranging from 0 to 127) and returns the most probable scale it belongs to.
+If the scale is unknown or the piece contains several tonality, will return : 
+"Unregistered exotic scale or atonal/modulating musical piece"
 
 """
-function ScaleIdentification(scales, notes::Array{})
-    for s in scales
+function ScaleIdentification(scales, MIDInotes::Array{})
+    notes = MIDI_to_notes(MIDInotes)
+    for (k,v) in scales
         tester = true
-        for sn in s
-            for n in MostFrenquentNotes(notes)
-                if n != sn
-                    test = false
-                end
+        for n in MostFrenquentNotes(notes)
+            if n ∉ v
+                tester = false
             end
         end
         if tester == true
-            return s
+            return k,v
             break
         end
+    end
+    if tester == false
+        print("Unregistered exotic scale or atonal/modulating musical piece")
     end
 end
 
 scales = Dict()
-# Common western scales
+
 scales["C Major/A minor"] = ["C", "D", "E", "F", "G", "A", "B"]
 scales["C# Major/A# minor"] = ["C", "C#", "D#", "F", "F#", "G#", "A#"]
-scales["D Major/B minor"]=["C#", "D", "E", "F#", "G", "A", "B"]
-scales["D# Major/C minor"]=["C", "D", "D#", "F", "G", "G#", "A#"]
-scales["E Major/C# minor"]=["C#", "D#", "E", "F#", "G#", "A", "B"]
-scales["F Major/D minor"]=["C", "D", "E", "F", "G", "A", "A#"]
-scales["F# Major/D# minor"]=["C#", "D#", "F", "F#", "G#", "A#", "B"]
-scales["G Major/E minor"]=["C", "D", "E", "F#", "G", "A", "B"]
-scales["G# Major/F minor"]=["C","C#", "D#", "F", "G", "G#", "A#", "B"]
-scales["A Major/F# minor"]=["C#", "D", "E", "F#", "G#", "A", "B"]
-scales["A# Major/G minor"]=["C", "D", "D#", "F", "G", "A", "A#"]
-scales["B Major/G# minor"]=["C#", "D#", "E", "F#", "G#", "A#", "B"]
-# Minor harmonic scales
-#scales["C minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["C# minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["D minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["D# minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["E minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["F minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["F# minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["G minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["G# minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["A minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["A# minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-#scales["B minor"]=["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-# Minor melodic scales
-
-export MIDI_to_cat, MIDI_to_notes, MIDI_to_spectral
-
-
+scales["D Major/B minor"] = ["C#", "D", "E", "F#", "G", "A", "B"]
+scales["D# Major/C minor"] = ["C", "D", "D#", "F", "G", "G#", "A#"]
+scales["E Major/C# minor"] = ["C#", "D#", "E", "F#", "G#", "A", "B"]
+scales["F Major/D minor"] = ["C", "D", "E", "F", "G", "A", "A#"]
+scales["F# Major/D# minor"] = ["C#", "D#", "F", "F#", "G#", "A#", "B"]
+scales["G Major/E minor"] = ["C", "D", "E", "F#", "G", "A", "B"]
+scales["G# Major/F minor"] = ["C","C#", "D#", "F", "G", "G#", "A#"]
+scales["A Major/F# minor"] = ["C#", "D", "E", "F#", "G#", "A", "B"]
+scales["A# Major/G minor"] = ["C", "D", "D#", "F", "G", "A", "A#"]
+scales["B Major/G# minor"] = ["C#", "D#", "E", "F#", "G#", "A#", "B"]
+scales["C minor harmonic"] = ["C", "D", "D#", "F", "G", "G#", "B"]
+scales["C# minor harmonic"] = ["C", "C#","D#", "E", "F#", "G#", "A"]
+scales["D minor harmonic"] = ["C#", "D", "E", "F", "G", "A", "A#"]
+scales["D# minor harmonic"] = ["B", "D", "D#", "F", "F#", "G#", "A#"]
+scales["E minor harmonic"] = ["C", "D#", "E", "F#", "G", "A", "B"]
+scales["F minor harmonic"] = ["C", "C#", "E", "F", "G", "G#", "A#"]
+scales["F# minor harmonic"] =  ["C#", "D", "F", "F#", "G#", "A", "B"]
+scales["G minor harmonic"] = ["C", "D", "D#", "F#", "G", "A", "A#"]
+scales["G# minor harmonic"] = ["C#", "D#", "E", "G", "G#", "A#", "B"]
+scales["A minor harmonic"] = ["C", "D", "E", "F", "G#", "A", "B"]
+scales["A# minor harmonic"] = ["C", "C#", "D#", "F", "F#", "A", "A#"]
+scales["B minor harmonic"] = ["C#", "D", "E", "F#", "G", "A#", "B"]
+scales["C minor melodic"] = ["C", "D", "D#", "F", "G", "A", "B"]
+scales["C# minor melodic"] = ["C", "C#","D#", "E", "F#", "G#", "A#"]
+scales["D minor melodic"] = ["C#", "D", "E", "F", "G", "A", "B"]
+scales["D# minor harmonic"] = ["C", "D", "D#", "F", "F#", "G#", "A#"]
+scales["E minor melodic"] = ["C#", "D#", "E", "F#", "G", "A", "B"]
+scales["F minor melodic"] = ["C", "D", "E", "F", "G", "G#", "A#"]
+scales["F# minor melodic"] =  ["C#", "D#", "F", "F#", "G#", "A", "B"]
+scales["G minor melodic"] = ["C", "D", "E", "F#", "G", "A", "A#"]
+scales["G# minor melodic"] = ["C#", "D#", "F", "G", "G#", "A#", "B"]
+scales["A minor melodic"] = ["C", "D", "E", "F#", "G#", "A", "B"]
+scales["A# minor melodic"] = ["C", "C#", "D#", "F", "G", "A", "A#"]
+scales["B minor melodic"] = ["C#", "D", "E", "F#", "G#", "A#", "B"]
