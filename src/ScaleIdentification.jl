@@ -36,8 +36,8 @@ and returns the 7 most frequent values from this array.
 """
 function most_frenquent_notes(notes::Array{})
     occurency = sort(Dict(value => key for (key, value) in countmap(notes)), rev = true)
-    most_frequent_notes = Any[n for n in values(occurency)]
-    return most_frequent_notes[1:7]
+    most_frequent = Any[n for n in values(occurency)]
+    return most_frequent[1:7]
 end
 
 """
@@ -52,7 +52,7 @@ function scale_identification(scales, MIDInotes::Array{})
     notes = MIDI_to_notes(MIDInotes)
     for (k,v) in scales
         tester = true
-        for n in MostFrenquentNotes(notes)
+        for n in most_frenquent_notes(notes)
             if n ∉ v
                 tester = false
             end
