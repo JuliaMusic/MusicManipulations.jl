@@ -28,27 +28,27 @@ end
 
 
 """
-    MostfrequentNotes(notes)
+    most_frenquent_notes(notes)
 
 Takes an Array representing musical notes
 and returns the 7 most frequent values from this array.
 
 """
-function MostFrenquentNotes(notes::Array{})
+function most_frenquent_notes(notes::Array{})
     occurency = sort(Dict(value => key for (key, value) in countmap(notes)), rev = true)
     most_frequent_notes = Any[n for n in values(occurency)]
     return most_frequent_notes[1:7]
 end
 
 """
-    ScaleIdentification(scales, notes::Array{})
+    scale_identification(scales, notes::Array{})
 
 Takes an Array of MIDI pitches (ranging from 0 to 127) and returns the most probable scale it belongs to.
 If the scale is unknown or the piece contains several tonality, will return : 
 "Unregistered exotic scale or atonal/modulating musical piece"
 
 """
-function ScaleIdentification(scales, MIDInotes::Array{})
+function scale_identification(scales, MIDInotes::Array{})
     notes = MIDI_to_notes(MIDInotes)
     for (k,v) in scales
         tester = true
