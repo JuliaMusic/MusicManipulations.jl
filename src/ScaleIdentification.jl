@@ -11,7 +11,7 @@ julia> Midi_to_notes([0,13,26])
 ["C","C","C"]
 
 """
-function MIDI_to_notes(MIDInotes::Array{})
+function MIDI_to_notes(MIDInotes)
     name = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
     MIDIrange = []
     for i in range(-1,12)
@@ -34,21 +34,21 @@ Takes an Array representing musical notes
 and returns the 7 most frequent values from this array.
 
 """
-function most_frenquent_notes(notes::Array{})
+function most_frenquent_notes(notes)
     occurency = sort(Dict(value => key for (key, value) in countmap(notes)), rev = true)
-    most_frequent = Any[n for n in values(occurency)]
+     most_frequent = values(occurency)
     return most_frequent[1:7]
 end
 
 """
-    scale_identification(scales, notes::Array{})
+    scale_identification(scales, notes)
 
 Takes an Array of MIDI pitches (ranging from 0 to 127) and returns the most probable scale it belongs to.
 If the scale is unknown or the piece contains several tonality, will return : 
 "Unregistered exotic scale or atonal/modulating musical piece"
 
 """
-function scale_identification(scales, MIDInotes::Array{})
+function scale_identification(scales, MIDInotes)
     notes = MIDI_to_notes(MIDInotes)
     for (k,v) in scales
         tester = true
