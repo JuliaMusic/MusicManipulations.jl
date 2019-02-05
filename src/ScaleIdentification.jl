@@ -67,7 +67,7 @@ function scale_identification(scales, MIDInotes)
     end
 end
 
-scales = Dict()
+const scales = Dict{String, Vector{String}}()
 
 scales["C Major/A minor"] = ["C", "D", "E", "F", "G", "A", "B"]
 scales["C# Major/A# minor"] = ["C", "C#", "D#", "F", "F#", "G#", "A#"]
