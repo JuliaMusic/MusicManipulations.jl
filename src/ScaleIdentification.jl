@@ -13,17 +13,13 @@ julia> Midi_to_notes([0,13,26])
 """
 function MIDI_to_notes(MIDInotes)
     name = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-    MIDIrange = []
-    for i in range(-1,12)
+    MIDIrange = String[]
+    for i in range(0,13)
         for note in name
             push!(MIDIrange,note)
         end
     end
-    notes = []
-    for n in MIDInotes
-        push!(notes,MIDIrange[n+1])
-    end
-    return notes
+    return [MIDIrange[n+1] for n in MIDInotes]
 end
 
 
