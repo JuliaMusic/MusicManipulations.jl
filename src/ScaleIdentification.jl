@@ -1,59 +1,5 @@
 using MIDI
 
-
-"""
-    MIDI_to_notes
-
-Returns the note names of an instance of Notes, inside of single octave.
-
-Example :
-julia> Midi_to_notes([0,13,26])
-["C","C","C"]
-
-"""
-MIDI_to_notes(MIDInotes) = [MIDI.PITCH_TO_NAME[mod(n.pitch, 12)] for n in MIDInotes]
-
-
-"""
-    most_frenquent_notes(notes)
-
-Takes an Array representing musical notes
-and returns the 7 most frequent values from this array.
-
-"""
-function most_frenquent_notes(notes)
-    occurency = sort(Dict(value => key for (key, value) in countmap(notes)), rev = true)
-    most_frequent = collect(values(occurency))
-    return most_frequent[1:7]
-end
-
-"""
-    scale_identification(scales, notes)
-
-Takes an instance of Notes and returns the most probable scale it belongs to.
-If the scale is unknown or the piece contains several tonality, will return : 
-"Unregistered exotic scale or atonal/modulating musical piece"
-
-"""
-function scale_identification(scales, MIDInotes)
-    notes = MIDI_to_notes(MIDInotes)
-    for (k,v) in scales
-        tester = true
-        for n in most_frenquent_notes(notes)
-            if n ∉ v
-                tester = false
-            end
-        end
-        if tester == true
-            return print("the scale is : ",k)
-            break
-        end
-    end
-    if tester == false
-        print("Atonal/modulating musical key center or Unregistered exotic scale")
-    end
-end
-
 const scales = Dict{String, Vector{String}}()
 
 scales["C Major/A minor"] = ["C", "D", "E", "F", "G", "A", "B"]
@@ -92,3 +38,57 @@ scales["G♯ minor melodic"] = ["C♯", "D♯", "F", "G", "G♯", "A♯", "B"]
 scales["A minor melodic"] = ["C", "D", "E", "F♯", "G♯", "A", "B"]
 scales["A♯ minor melodic"] = ["C", "C♯", "D♯", "F", "G", "A", "A♯"]
 scales["B minor melodic"] = ["C♯", "D", "E", "F♯", "G♯", "A♯", "B"]
+
+
+"""
+    MIDI_to_notes
+
+Returns the note names of an instance of Notes, inside of single octave.
+
+Example :
+julia> Midi_to_notes([0,13,26])
+["C","C","C"]
+
+"""
+MIDI_to_notes(MIDInotes) = [MIDI.PITCH_TO_NAME[mod(n.pitch, 12)] for n in MIDInotes]
+
+
+"""
+    most_frenquent_notes(notes)
+
+Takes an Array representing musical notes
+and returns the 7 most frequent values from this array.
+
+"""
+function most_frenquent_notes(notes)
+    occurency = sort(Dict(value => key for (key, value) in countmap(notes)), rev = true)
+    most_frequent = collect(values(occurency))
+    return most_frequent[1:7]
+end
+
+"""
+    scale_identification(notes)
+
+Takes an instance of Notes and returns the most probable scale it belongs to.
+If the scale is unknown or the piece contains several tonality, will return : 
+"Unregistered exotic scale or atonal/modulating musical piece"
+
+"""
+function scale_identification(MIDInotes)
+    notes = MIDI_to_notes(MIDInotes)
+    for (k,v) in scales
+        tester = true
+        for n in most_frenquent_notes(notes)
+            if n ∉ v
+                tester = false
+            end
+        end
+        if tester == true
+            return print("the scale is : ",k)
+            break
+        end
+    end
+    if tester == false
+        print("Atonal/modulating musical key center or Unregistered exotic scale")
+    end
+end
