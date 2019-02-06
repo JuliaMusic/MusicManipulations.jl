@@ -32,7 +32,7 @@ and returns the 7 most frequent values from this array.
 """
 function most_frenquent_notes(notes)
     occurency = sort(Dict(value => key for (key, value) in countmap(notes)), rev = true)
-     most_frequent = values(occurency)
+     most_frequent = collect(values(occurency))
     return most_frequent[1:7]
 end
 
