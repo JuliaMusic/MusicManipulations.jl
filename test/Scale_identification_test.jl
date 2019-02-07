@@ -1,3 +1,4 @@
+using MusicManipulations
 using Test
 
 tester = getnotes(readMIDIFile("recording_uwe_2.mid"),1)
