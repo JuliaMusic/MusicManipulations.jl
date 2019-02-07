@@ -1,5 +1,7 @@
 using MIDI
 
+export scale_identification, MIDI_to_notes, most_frenquent_notes
+
 const scales = Dict{String, Vector{String}}()
 
 scales["C Major/A minor"] = ["C", "D", "E", "F", "G", "A", "B"]
@@ -39,6 +41,7 @@ scales["A minor melodic"] = ["C", "D", "E", "F♯", "G♯", "A", "B"]
 scales["A♯ minor melodic"] = ["C", "C♯", "D♯", "F", "G", "A", "A♯"]
 scales["B minor melodic"] = ["C♯", "D", "E", "F♯", "G♯", "A♯", "B"]
 
+export scales 
 
 """
     MIDI_to_notes
@@ -92,3 +95,4 @@ function scale_identification(MIDInotes)
         print("Atonal/modulating musical key center or Unregistered exotic scale")
     end
 end
+
