@@ -1,4 +1,5 @@
 using MIDI
+using StatsBase
 
 export scale_identification, MIDI_to_notes, most_frenquent_notes
 
