@@ -88,7 +88,8 @@ function scale_identification(MIDInotes)
             end
         end
         if tester == true
-            return print("the scale is : ",k)
+            print("the scale is : ",k)
+            return (k,v)
             break
         end
     end
