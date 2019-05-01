@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 # master
 
+# v0.6.0
+* Move to musescore 3
+
+# v0.5.0
+* Preliminary scale identification method (not exported)
+
+# v0.4.0
+* added drumkey for Musescore (its actually the GM)
 
 # v0.3.0
 * Printing/saving a `midi` or `notes` struct into a score is now possible through MuseScore.

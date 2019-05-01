@@ -14,7 +14,7 @@ timeseries are always `Float64`*).
 The `property` can be `:velocity`, `:pitch`, or `:duration`. Grid bins without any
 notes are given the value `0`. This **can be problematic** if you request for
 `:pitch` and your `notes` also include notes which actually have pitch `0`,
-i.e. `C0`.
+i.e. `C-1`.
 """
 function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
     isgrid(grid)
