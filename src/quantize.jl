@@ -99,7 +99,7 @@ identifying that point using [`classify`](@ref).
 It is assumed that the grid is the same for all quarter notes of the track.
 
 If `duration` is `true`, the function also quantizes the duration of the notes
-on the same grid.
+on the same grid, while ensuring a duration spanning at least one grid point.
 
 This function respects the notes' absolute position and quantizes in absolute position,
 not relative.
