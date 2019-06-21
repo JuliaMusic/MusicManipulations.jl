@@ -67,7 +67,7 @@ function _init_timeseries_vectors(notes, grid)
     firstbin = findfirst(x -> x == mod(firstp, tpq), bins)
 
     # Create vectors
-    tvec = firstp .+ bins[firstbin:end]
+    tvec = (firstp÷tpq)*tpq .+ bins[firstbin:end]
     c = firstp÷tpq + 1
     while tvec[end] < notes[end].position
         append!(tvec, bins .+ c*tpq)
