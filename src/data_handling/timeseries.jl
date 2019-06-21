@@ -28,7 +28,7 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
         error("Unknown property!")
     end
 
-    ts, tvec, qnotes, pos = _init_timeseries_vectors(notes, grid)
+    ts, tvec, pos = _init_timeseries_vectors(notes, grid)
     i = previdx = 1; L = length(pos)
     while i ≤ L
         # find entries of same grid bin
@@ -36,19 +36,19 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
         while j ≤ L - i && pos[i+j] == pos[i]
             j+=1
         end
-        add_timeseries_value!(ts, qnotes, pos, tvec, i, j, property, f)
+        add_timeseries_value!(ts, notes, pos, tvec, i, j, property, f)
         i += j
     end
     return tvec, ts
 end
 
-function add_timeseries_value!(ts, qnotes, pos, tvec, i, j, property, f)
+function add_timeseries_value!(ts, notes, pos, tvec, i, j, property, f)
     idx = findfirst(x -> x == pos[i], tvec) # where to add the value
     isnothing(idx) && error("nothing")
     if j > 1
-        val = Float64(f(getfield(qnotes[k], property) for k in i:i+j-1))
+        val = Float64(f(getfield(notes[k], property) for k in i:i+j-1))
     else
-        val = Float64(getfield(qnotes[i], property))
+        val = Float64(getfield(notes[i], property))
     end
     if property == :position #, then we want timing deviations
         val = val - tvec[idx]
@@ -74,5 +74,5 @@ function _init_timeseries_vectors(notes, grid)
         c += 1
     end
     ts = fill!(Vector{Union{Float64, Missing}}(undef, length(tvec)), missing)
-    return ts, tvec, qnotes, pos
+    return ts, tvec, pos
 end
