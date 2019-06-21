@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# v0.7
+Rework and big improvement of the function `timeseries`. Firstly, now bins with missing entries get the Julia value `missing` instead of 0. In addition, now one can also get the timeserises of the positions of the data, using the property `:position`. This returns the timing deviations with respect to the corresponding entry in `tvec`. These numbers are also known as *microtiming deviations* in the literature. Finally, the `grid` argument is now mandatory.
+See the updated documentation string for more.
+
 # v0.6.2
 * Improve fake note removal functionality for notes loaded from the TD-50 (function `rm_hihatfake` in `drums.jl`)
 
