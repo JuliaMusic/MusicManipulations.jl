@@ -32,7 +32,7 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
     i = previdx = 1; L = length(pos)
     while i ≤ L
         # find entries of same grid bin
-        j = 0
+        j = 1
         while j ≤ L - i && pos[i+j] == pos[i]
             j+=1
         end
@@ -45,8 +45,8 @@ end
 function add_timeseries_value!(ts, qnotes, pos, tvec, i, j, property, f)
     idx = findfirst(x -> x == pos[i], tvec) # where to add the value
     isnothing(idx) && error("nothing")
-    if j > 0
-        val = Float64(f(getfield(qnotes[k], property) for k in i:i+j))
+    if j > 1
+        val = Float64(f(getfield(qnotes[k], property) for k in i:i+j-1))
     else
         val = Float64(getfield(qnotes[i], property))
     end
