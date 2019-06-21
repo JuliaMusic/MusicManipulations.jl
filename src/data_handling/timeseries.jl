@@ -1,10 +1,10 @@
 export timeseries
 
 """
-    timeseries(notes::Notes, property, f [, grid]) -> tvec, ts
+    timeseries(notes::Notes, property, f, grid) -> tvec, ts
 Produce a timeseries of the `property` of the given notes, by
-first quantizing on the given `grid`, which defaults to `0:1//notes.tpq:1`
-(i.e. no real quantization). Return the time vector `tvec` in ticks
+first quantizing on the given `grid` (to avoid actual quantization
+use the grid `0:1//notes.tpq:1`). Return the time vector `tvec` in ticks
 and the produced timeseries `ts`.
 
 After quantization, it is often the case that many notes are in the same bin of
@@ -15,12 +15,13 @@ etc. Notice that bins without any note in them obtain the value `missing`.
 If the `property` is `:velocity`, `:pitch`, or `:duration` the function
 behaves exactly as described. The `property` can also be `:position`.
 In this case, the timeseries `ts` contain the timing deviations of the notes
-with respect to the `tvec` vector.
+with respect to the `tvec` vector
+(these numbers are known as *microtiming deviations* in the literature.)
 
-This function requires that `notes` is temporally sorted. Bins that have no
+`timeseries` requires that `notes` is temporally sorted. Bins that have no
 notes in them obtain the value `missing`, regardless of the requested property.
 """
-function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
+function timeseries(notes, property, f, grid)
     isgrid(grid)
     if !issorted(notes, by = x -> x.position)
         error("notes must be sorted by position!")
