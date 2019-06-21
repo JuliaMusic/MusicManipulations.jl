@@ -13,13 +13,14 @@ using Statistics
     @test tvec == collect(0:960:159*960)
     @test tseries == collect(0:159)
 
-    # time series for eights with zeros
+    # time series for eights with missing values
     grid = 0:1//2:1
     tvec, tseries = timeseries(notes, :velocity, maximum, grid)
 
     @test tvec == collect(0:480:159*960+480)
     @test [tseries[i] for i in 1:2:159*2+1] == collect(Float64, 0:159)
-    @test [tseries[i] for i in 2:2:159*2+2] == zeros(160)
+    @test count(ismissing, [tseries[i] for i in 2:2:159*2+2]) == 160
+    @test count(x -> x isa Float64, [tseries[i] for i in 2:2:159*2+2]) == 0
 
     # add notes which have been quantized to same bin
     for i = 0:159
@@ -40,13 +41,14 @@ using Statistics
     @test tvec == collect(Float64, 0:960:159*960)
     @test tseries == collect(Float64, 1:160) .- 0.5
 
-    # time series for eights with zeros and average for bins
+    # time series for eights with missing and average for bins
     grid = 0:1//2:1
     tvec, tseries = timeseries(notes, :velocity, mean, grid)
 
     @test tvec == collect(Float64, 0:480:159*960+480)
     @test [tseries[i] for i in 1:2:159*2+1] == collect(Float64, 0:159) .+ 0.5
-    @test [tseries[i] for i in 2:2:159*2+2] == zeros(Int,160)
+    @test count(ismissing, [tseries[i] for i in 2:2:159*2+2]) == 160
+    @test count(x -> x isa Float64, [tseries[i] for i in 2:2:159*2+2]) == 0
 
 end
 
@@ -71,11 +73,12 @@ end
     end
     sort!(notes.notes, lt=((x, y)->x.position<y.position))
 
-    # time series for eights with zeros and average for bins
+    # time series for eights with missing and average for bins
     grid = 0:1//2:1
     tvec, tseries = timeseries(notes, :pitch, mean, grid)
 
     @test tvec == collect(0:480:(L)*960-480)
     @test [tseries[i] for i in 1:2:(L-1)*2+1] == (collect(Float64, vals) .+ 5)./2
-    @test [tseries[i] for i in 2:2:(L-1)*2+2] == zeros(Int,L)
+    @test count(ismissing, [tseries[i] for i in 2:2:(L-1)*2+2]) == L
+    @test count(x -> x isa Float64, [tseries[i] for i in 2:2:(L-1)*2+2]) == 0
 end
