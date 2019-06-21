@@ -28,22 +28,22 @@ function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
         error("Unknown property!")
     end
 
-    ts, tvec, pos = _init_timeseries_vectors(notes, grid)
-    i = previdx = 1; L = length(pos)
+    ts, tvec, quantizedpos = _init_timeseries_vectors(notes, grid)
+    i = previdx = 1; L = length(quantizedpos)
     while i ≤ L
         # find entries of same grid bin
         j = 1
-        while j ≤ L - i && pos[i+j] == pos[i]
+        while j ≤ L - i && quantizedpos[i+j] == quantizedpos[i]
             j+=1
         end
-        add_timeseries_value!(ts, notes, pos, tvec, i, j, property, f)
+        add_timeseries_value!(ts, notes, quantizedpos, tvec, i, j, property, f)
         i += j
     end
     return tvec, ts
 end
 
-function add_timeseries_value!(ts, notes, pos, tvec, i, j, property, f)
-    idx = findfirst(x -> x == pos[i], tvec) # where to add the value
+function add_timeseries_value!(ts, notes, quantizedpos, tvec, i, j, property, f)
+    idx = findfirst(x -> x == quantizedpos[i], tvec) # where to add the value
     isnothing(idx) && error("nothing")
     if j > 1
         val = Float64(f(getfield(notes[k], property) for k in i:i+j-1))
@@ -59,7 +59,7 @@ end
 function _init_timeseries_vectors(notes, grid)
     tpq = notes.tpq
     qnotes = quantize(notes, grid)
-    pos = positions(qnotes)
+    quantizedpos = positions(qnotes)
     realgrid = tpq .* grid
     bins = round.(Int, realgrid)[1:end-1]
     # tvec limits
@@ -74,5 +74,5 @@ function _init_timeseries_vectors(notes, grid)
         c += 1
     end
     ts = fill!(Vector{Union{Float64, Missing}}(undef, length(tvec)), missing)
-    return ts, tvec, pos
+    return ts, tvec, quantizedpos
 end
