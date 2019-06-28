@@ -1,66 +1,77 @@
 export timeseries
 
 """
-    timeseries(notes::Notes, property, f [, grid]) -> tvec, ts
-Produce a timeseries of the `property` of the given notes, optionally
-first quantizing on the given `grid`.
+    timeseries(notes::Notes, property, f, grid) -> tvec, ts
+Produce a timeseries of the `property` of the given notes, by
+first quantizing on the given `grid` (to avoid actual quantization
+use the grid `0:1//notes.tpq:1`). Return the time vector `tvec` in ticks
+and the produced timeseries `ts`.
 
-After quantization, it is often
-the case that many notes are in the same bin of the grid. The **function** `f`
-denotes which value of the vector of the `property` of the notes to keep.
-Typical values are `minimum, maximum, mean`, etc (*for type stability the returned
-timeseries are always `Float64`*).
+After quantization, it is often the case that many notes are in the same bin of
+the grid. The **function** `f` denotes which value of the vector of the
+`property` of the notes to keep. Typical values are `minimum, maximum, mean`,
+etc. Notice that bins without any note in them obtain the value `missing`,
+regardless of the function `f` or the `property`.
 
-The `property` can be `:velocity`, `:pitch`, or `:duration`. Grid bins without any
-notes are given the value `0`. This **can be problematic** if you request for
-`:pitch` and your `notes` also include notes which actually have pitch `0`,
-i.e. `C-1`.
+If the `property` is `:velocity`, `:pitch`, or `:duration` the function
+behaves exactly as described. The `property` can also be `:position`.
+In this case, the timeseries `ts` contain the timing deviations of the notes
+with respect to the `tvec` vector
+(these numbers are known as *microtiming deviations* in the literature.)
 """
-function timeseries(notes, property, f, grid = 0:1//notes.tpq:1)
+function timeseries(notes, property, f, grid)
     isgrid(grid)
+    if !issorted(notes, by = x -> x.position)
+        error("notes must be sorted by position!")
+    elseif property ∉ (:velocity, :pitch, :duration, :position, :channel)
+        error("Unknown property!")
+    end
+
+    ts, tvec, quantizedpos = _init_timeseries_vectors(notes, grid)
+    i = previdx = 1; L = length(quantizedpos)
+    while i ≤ L
+        # find entries of same grid bin
+        j = 1
+        while j ≤ L - i && quantizedpos[i+j] == quantizedpos[i]
+            j+=1
+        end
+        add_timeseries_value!(ts, notes, quantizedpos, tvec, i, j, property, f)
+        i += j
+    end
+    return tvec, ts
+end
+
+function add_timeseries_value!(ts, notes, quantizedpos, tvec, i, j, property, f)
+    idx = findfirst(x -> x == quantizedpos[i], tvec) # where to add the value
+    isnothing(idx) && error("nothing")
+    if j > 1
+        val = Float64(f(getfield(notes[k], property) for k in i:i+j-1))
+    else
+        val = Float64(getfield(notes[i], property))
+    end
+    if property == :position #, then we want timing deviations
+        val = val - tvec[idx]
+    end
+    ts[idx] = val
+end
+
+function _init_timeseries_vectors(notes, grid)
     tpq = notes.tpq
     qnotes = quantize(notes, grid)
-    pos = positions(qnotes)
-    # Real grid and grid bins
-    rgrid = tpq .* grid
-    bins = round.(Int, rgrid)[1:end-1]
+    quantizedpos = positions(qnotes)
+    realgrid = tpq .* grid
+    bins = round.(Int, realgrid)[1:end-1]
     # tvec limits
     firstp = Int(qnotes[1].position)
     firstbin = findfirst(x -> x == mod(firstp, tpq), bins)
 
-    # Create tvec
+    # Create vectors
     tvec = (firstp÷tpq)*tpq .+ bins[firstbin:end]
     c = firstp÷tpq + 1
     while tvec[end] < notes[end].position
         append!(tvec, bins .+ c*tpq)
         c += 1
     end
-
-    ts = zeros(Float64, size(tvec))
-
-    i = previdx = 1; L = length(pos)
-    while i ≤ L
-        # find entries of same grid bin
-        j = 1
-        while j ≤ L - i && pos[i+j] == pos[i]
-            j+=1
-        end
-        # get timeseries value for this note
-        if j > 1
-            d = [getfield(qnotes[k], property) for k in i:i+j-1]
-            val = Float64(f(d))
-        else
-            val = Float64(getfield(qnotes[i], property))
-        end
-
-        # find pos[i] in tvec
-        idx = findfirst(x -> x == pos[i], tvec)
-        ts[idx] = val
-
-        # TODO: For pitch, change zeros of intermediate entries
-        # to pitch of previous notes
-
-        i += j
-    end
-    return tvec, ts
+    ts = fill!(Vector{Union{Float64, Missing}}(undef, length(tvec)), missing)
+    return ts, tvec, quantizedpos
 end
