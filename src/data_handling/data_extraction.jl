@@ -41,14 +41,14 @@ end
 
 
 """
-    filterpitches(notes::Notes, filter) -> newnotes
+    filterpitches(notes::Notes, filters) -> newnotes
 
-Only keep the notes that have a pitch specified in `filter` (one or many pitches).
+Only keep the notes that have a pitch specified in `filters` (one or many pitches).
 """
-function filterpitches(notes::Notes{N}, filter) where {N<:AbstractNote}
+function filterpitches(notes::Notes{N}, filters) where {N<:AbstractNote}
     n = N[]
     for i ∈ 1:length(notes)
-        notes[i].pitch ∈ filter && push!(n, copy(notes[i]))
+        notes[i].pitch ∈ filters && push!(n, copy(notes[i]))
     end
     return Notes(n, notes.tpq)
 end
