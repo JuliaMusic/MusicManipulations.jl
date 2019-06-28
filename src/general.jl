@@ -38,6 +38,14 @@ translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
 [Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
 
 """
+    translate!(notes, ticks)
+In-place version of [`translate`](@ref).
+"""
+function translate!(notes::Notes, ticks)
+    #stuff
+end
+
+"""
     transpose(notes, semitones)
 Transpose the `notes` for the given amount of `semitones`.
 """
