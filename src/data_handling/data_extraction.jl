@@ -1,4 +1,4 @@
-export getfirstnotes, allowedpitches, separatepitches, firstnotes
+export getfirstnotes, filterpitches, separatepitches, firstnotes
 
 """
     firstnotes(notes, grid)
@@ -41,18 +41,19 @@ end
 
 
 """
-    allowedpitches(notes::Notes, allowed) -> newnotes
+    filterpitches(notes::Notes, filter) -> newnotes
 
-Only keep the notes that have a pitch specified in `allowed` (one or many pitches).
+Only keep the notes that have a pitch specified in `filter` (one or many pitches).
 """
-function allowedpitches(notes::Notes{N}, allowed) where {N<:AbstractNote}
+function filterpitches(notes::Notes{N}, filter) where {N<:AbstractNote}
     n = N[]
     for i ∈ 1:length(notes)
-        notes[i].pitch ∈ allowed && push!(n, deepcopy(notes[i]))
+        notes[i].pitch ∈ filter && push!(n, copy(notes[i]))
     end
     return Notes(n, notes.tpq)
 end
 
+@deprecate allowedpitches filterpitches
 
 
 """
