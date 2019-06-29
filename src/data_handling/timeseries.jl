@@ -10,16 +10,14 @@ and the produced timeseries `ts`.
 After quantization, it is often the case that many notes are in the same bin of
 the grid. The **function** `f` denotes which value of the vector of the
 `property` of the notes to keep. Typical values are `minimum, maximum, mean`,
-etc. Notice that bins without any note in them obtain the value `missing`.
+etc. Notice that bins without any note in them obtain the value `missing`,
+regardless of the function `f` or the `property`.
 
 If the `property` is `:velocity`, `:pitch`, or `:duration` the function
 behaves exactly as described. The `property` can also be `:position`.
 In this case, the timeseries `ts` contain the timing deviations of the notes
 with respect to the `tvec` vector
 (these numbers are known as *microtiming deviations* in the literature.)
-
-`timeseries` requires that `notes` is temporally sorted. Bins that have no
-notes in them obtain the value `missing`, regardless of the requested property.
 """
 function timeseries(notes, property, f, grid)
     isgrid(grid)
