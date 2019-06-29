@@ -67,7 +67,8 @@ are deleted as well, which accounts for spurious note triggering.
 """
 function rm_hihatfake!(notes::Notes;
     back = 100, forw = 100, cutoff_fc = 0x16,
-    cutoff_vel = 10, cut_pitches = [0x2e])
+    cutoff_vel = 10, cut_pitches = [0x2e],
+    triggers = (0x2c, 0x1a, 0x16))
 
     #first map special closed notes
     for note in notes
@@ -125,7 +126,7 @@ function rm_hihatfake!(notes::Notes;
    end
    deleted += length(deletes)
    deleteat!(notes.notes, deletes)
-   println("rm_hihatfake! deleted $(deleted) fake notes")
+   println("rm_hihatfake! deleted $(deleted) notes")
 end
 
 ###############################################################################
