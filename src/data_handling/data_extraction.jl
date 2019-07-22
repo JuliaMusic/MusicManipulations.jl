@@ -86,3 +86,51 @@ function _add_note_to_dict!(separated, note::N, tpq) where {N<:AbstractNote}
         push!(separated[note.pitch], deepcopy(note))
     end
 end
+
+export estimate_delay, estimate_delay_recursive
+
+estimate_delay(notes, sub::Int) = estimate_delay(notes,  0:(1/sub):1)
+
+"""
+    estimate_delay(notes, grid)
+Estimate the average temporal deviation of the given `notes` from the
+quarter note grid point. The notes are classified according to the `grid`
+and only notes in the first and last grid bins are used. Their position
+is subtracted from the nearby quarter note and the returned value
+is the average of this operation.
+"""
+function estimate_delay(notes::Notes, grid::AbstractVector)
+    # TODO: this can be optimized by looping over the notes directly
+    # and classifying one by one, and adding to `d` one by one
+    clas = classify(notes, grid)
+    base = notes[findall(x -> x == 1 || x == length(grid), clas)]
+    d = 0.0
+    for n in base
+        pos = Int(n.position % notes.tpq)
+        res = pos ≤ grid[2]*notes.tpq ? pos : pos - notes.tpq
+        d += res
+    end
+    return d / length(base)
+end
+
+"""
+    estimate_delay_recursive(notes, grid, m)
+Do the same as [`estimate_delay`](@ref) but for `m` times, while in each step
+shifting the notes by the previously found delay. This improves the accuracy
+of the algorithm, because the distribution of the quarter notes is estimated
+better and better each time. The function should typically
+after a couple of `m`.
+
+The returned result is the estimated delay, in integer (ticks), as only integers
+can be used to actually shift the notes around.
+"""
+function estimate_delay_recursive(notes, grid, m)
+    totaldelay = 0
+    xnotes = notes
+    for i in 1:m
+        delay = round(Int, estimate_delay(xnotes, grid))
+        totaldelay += delay
+        xnotes = xnotes - delay
+    end
+    return totaldelay
+end
