@@ -2,13 +2,13 @@ export noteplotter
 maxnotevel(::Note) = 127
 maxnotevel(::MoreVelNote) = 157
 
+Rectangle = PyPlot.matplotlib.patches.Rectangle
 function plotpianonote!(ax, note, cmap)
-    r = matplotlib.patches.Rectangle((note.position, note.pitch - 0.5), note.duration, 1,
+    r = Rectangle((note.position, note.pitch - 0.5), note.duration, 1,
     color = cmap(note.velocity/maxnotevel(note)))
     ax.add_artist(r)
     return note.pitch
 end
-
 
 """
     noteplotter(notes::Notes; kwargs...)
@@ -27,9 +27,10 @@ Plot the given `notes` on a "piano roll" like setting with
   a dictionary that given the y-axis value returns how this value should be named.
 * `grid = 0:0.25:1` a grid to plot along with the notes (by default the 16th notes).
   Give nothing if you don't want grid lines to be plotted.
-* `plotnote! = plotpianonote!(ax, note, cmap)` A function with call arguments
+* `plotnote!` A function with call arguments
   `plotnote!(ax, note, cmap)` (with `cmap` a colormap instance, not a string),
-  that actually plots the notes. This argument allows for customization.
+  that actually plots the notes. By default plots a "piano-roll".
+  This argument allows for customization.
   See the official documentation for an example of how this is taken
   advantage of, to plot drum notes.
 """
