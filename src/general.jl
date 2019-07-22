@@ -1,17 +1,6 @@
 export translate, transpose, randomnotes, subdivision
 export velocities, positions, pitches, durations
-
 import Base: transpose, +, -
-
-function +(notes::Notes, x::Real)
-    X = round(Int, x)
-    z = deepcopy(notes)
-    for n in z
-        n.position += X
-    end
-    return z
-end
--(notes::Notes, x) = notes + (-x)
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
@@ -56,6 +45,11 @@ function translate!(notes::Notes, ticks)
         note.position += ticks
     end
 end
+
++(notes::Notes, x::Real) = translate(notes, round(Int, x))
+-(notes::Notes, x::Real) = translate(notes, -round(Int, x))
++(x::Real, notes::Notes) = notes + x
+-(x::Real, notes::Notes) = notes - x
 
 """
     transpose(notes, semitones)
