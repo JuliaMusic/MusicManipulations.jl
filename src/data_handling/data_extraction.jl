@@ -118,7 +118,7 @@ end
 Do the same as [`estimate_delay`](@ref) but for `m` times, while in each step
 shifting the notes by the previously found delay. This improves the accuracy
 of the algorithm, because the distribution of the quarter notes is estimated
-better and better each time. The function should typically
+better and better each time. The function should typically converge
 after a couple of `m`.
 
 The returned result is the estimated delay, in integer (ticks), as only integers

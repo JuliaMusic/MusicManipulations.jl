@@ -24,3 +24,17 @@ end
 
 end
 end
+
+@testset "estimate delay" begin
+    for midi in (readMIDIFile("serenade_full.mid"), readMIDIFile(testmidi()))
+        piano = getnotes(midi, 4)
+
+        d = estimate_delay(piano, 0:1//3:1)
+        @test abs(d) < 30
+
+        d2 = estimate_delay_recursive(piano, 0:1//3:1, 5)
+
+        @test d2 ≥ round(Int, d)
+        @test abs(d2) < 30
+    end
+end

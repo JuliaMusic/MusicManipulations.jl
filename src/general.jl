@@ -3,7 +3,7 @@ export velocities, positions, pitches, durations
 
 import Base: transpose, +, -
 
-function Base.+(notes::Notes, x::Real)
+function +(notes::Notes, x::Real)
     X = round(Int, x)
     z = deepcopy(notes)
     for n in z
