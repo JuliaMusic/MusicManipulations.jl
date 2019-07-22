@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# 0.9
+* new functions `estimate_delay` and `estimate_delay_recursive`.
+* Implemented `+` and `-` for `Notes` and `Int`. The operations are identical to `translate`.
+
+# 0.8
+* Renamed `allowedpitches` to `filterpiches`.
+* Added in-place methods for `translate` and `transpose`.
+
 # v0.7
 Rework and big improvement of the function `timeseries`. Firstly, now bins with missing entries get the Julia value `missing` instead of 0. In addition, now one can also get the timeserises of the positions of the data, using the property `:position`. This returns the timing deviations with respect to the corresponding entry in `tvec`. These numbers are also known as *microtiming deviations* in the literature. Finally, the `grid` argument is now mandatory.
 See the updated documentation string for more.

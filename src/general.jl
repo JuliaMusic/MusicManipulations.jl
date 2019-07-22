@@ -1,7 +1,6 @@
-import Base.transpose
-
 export translate, transpose, randomnotes, subdivision
 export velocities, positions, pitches, durations
+import Base: transpose, +, -
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
@@ -36,6 +35,21 @@ Translate the `notes` for the given amount of `ticks`.
 translate(notes::Notes, ticks) = Notes(translate(notes.notes, ticks), notes.tpq)
 translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
 [Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
+
+"""
+    translate!(notes, ticks)
+In-place version of [`translate`](@ref).
+"""
+function translate!(notes::Notes, ticks)
+    for note in notes
+        note.position += ticks
+    end
+end
+
++(notes::Notes, x::Real) = translate(notes, round(Int, x))
+-(notes::Notes, x::Real) = translate(notes, -round(Int, x))
++(x::Real, notes::Notes) = notes + x
+-(x::Real, notes::Notes) = notes - x
 
 """
     transpose(notes, semitones)
