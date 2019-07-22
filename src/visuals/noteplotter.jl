@@ -23,16 +23,18 @@ Plot the given `notes` on a "piano roll" like setting with
   Give `Inf` if you want to plot until the end of the notes.
 * `ax = gca()` the axis to plot on.
 * `cmap = "viridis"` the colormap to use for the velocity.
-* `names = Dict(p => pitch_to_name(p) for p in unique(pitches(notes)))`
-  a dictionary that given the y-axis value returns how this value should be named.
 * `grid = 0:0.25:1` a grid to plot along with the notes (by default the 16th notes).
   Give nothing if you don't want grid lines to be plotted.
+* `names = Dict(p => pitch_to_name(p) for p in unique(pitches(notes)))`
+  a dictionary that given the y-axis value returns how this value should be named.
 * `plotnote!` A function with call arguments
   `plotnote!(ax, note, cmap)` (with `cmap` a colormap instance, not a string),
   that actually plots the notes. By default plots a "piano-roll".
-  This argument allows for customization.
-  See the official documentation for an example of how this is taken
-  advantage of, to plot drum notes.
+
+The `plotnote!` argument allows for customization. The function is supposed
+to plot a note on the given axis **and return** the "value" of the note.
+See the official documentation for an example of how this is taken
+advantage of, to plot drum notes.
 """
 function noteplotter(notes::Notes;
     st = (notes[1].position ÷ notes.tpq) * notes.tpq,
