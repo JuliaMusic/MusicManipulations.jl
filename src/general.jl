@@ -1,5 +1,17 @@
 import Base.transpose
 
+import Base: +, -
+function Base.+(notes::Notes, x::Real)
+    X = round(Int, x)
+    z = deepcopy(notes)
+    for n in z
+        n.position += X
+    end
+    return z
+end
+
+-(notes::Notes, x) = notes + (-x)
+
 export translate, transpose, randomnotes, subdivision
 export velocities, positions, pitches, durations
 
