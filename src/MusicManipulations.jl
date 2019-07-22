@@ -16,7 +16,7 @@ include("specific_modules/drums.jl")
 
 include("motifs/notes_with_motifs.jl")
 
-include("staff_printing/musescore.jl")
+include("visuals/musescore.jl")
 import .MuseScore: musescore;
 
 export MuseScore, musescore
