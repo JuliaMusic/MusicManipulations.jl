@@ -1,6 +1,8 @@
-import Base.transpose
+export translate, transpose, randomnotes, subdivision
+export velocities, positions, pitches, durations
 
-import Base: +, -
+import Base: transpose, +, -
+
 function Base.+(notes::Notes, x::Real)
     X = round(Int, x)
     z = deepcopy(notes)
@@ -9,11 +11,7 @@ function Base.+(notes::Notes, x::Real)
     end
     return z
 end
-
 -(notes::Notes, x) = notes + (-x)
-
-export translate, transpose, randomnotes, subdivision
-export velocities, positions, pitches, durations
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
@@ -54,7 +52,9 @@ translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
 In-place version of [`translate`](@ref).
 """
 function translate!(notes::Notes, ticks)
-    #stuff
+    for note in notes
+        note.position += ticks
+    end
 end
 
 """
