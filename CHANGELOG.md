@@ -8,8 +8,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 * new functions `estimate_delay` and `estimate_delay_recursive`.
 * Implemented `+` and `-` for `Notes` and `Int`. The operations are identical to `translate`.
 * new function `noteplotter`, that comes into scope after `using PyPlot`. this is a full-featured plotting function to plot notes on a time grid. See its docstring for details, as well as the official documentation.
-
-# 0.8
 * Renamed `allowedpitches` to `filterpiches`.
 * Added in-place methods for `translate` and `transpose`.
 
