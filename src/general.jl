@@ -34,7 +34,7 @@ Translate the `notes` for the given amount of `ticks`.
 """
 translate(notes::Notes, ticks) = Notes(translate(notes.notes, ticks), notes.tpq)
 translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
-[Note(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
+[N(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
 
 """
     translate!(notes, ticks)
