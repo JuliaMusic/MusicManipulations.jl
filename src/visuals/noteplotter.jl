@@ -52,7 +52,7 @@ function noteplotter(notes::Notes;
     # plot all notes:
     plottedpitches = Int[]
     for note in notes
-        note.position > fi && break # assumes sorting in time
+        st < note.position < fi || break # assumes sorting in time
         p = plotnote!(ax, note, cm)
         p ∉ plottedpitches && push!(plottedpitches, p)
     end
