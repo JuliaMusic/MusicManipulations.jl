@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# 0.8.2
+* Bugfix of `noteplotter`.
+
 # 0.8
 * new functions `estimate_delay` and `estimate_delay_recursive`.
 * Implemented `+` and `-` for `Notes` and `Int`. The operations are identical to `translate`.

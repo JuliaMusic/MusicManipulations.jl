@@ -17,6 +17,8 @@ Plot the given `notes` on a "piano roll" like setting with
 - y axis being the "pitch" or "value" of the notes (see below)
 - color being the velocity of the notes
 
+Then return the values of the y axis.
+
 ## Keywords
 * `st = (notes[1].position ÷ notes.tpq) * notes.tpq`  time to start plotting from
 * `fi = st + 16notes.tpq` time to stop plotting at, by default 16 quarter notes, i.e. four bars.
@@ -52,7 +54,8 @@ function noteplotter(notes::Notes;
     # plot all notes:
     plottedpitches = Int[]
     for note in notes
-        st < note.position < fi || break # assumes sorting in time
+        st > note.position && continue
+        fi < note.position && break
         p = plotnote!(ax, note, cm)
         p ∉ plottedpitches && push!(plottedpitches, p)
     end
