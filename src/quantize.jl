@@ -23,7 +23,7 @@ function closest_point(grid, x)
     return best
 end
 
-function closest_realgrid(grid, x, tpq::Integer)
+function closest_realgrid(grid, x, tpq)
     best = 1
     dxbest = abs(x - grid[1]*tpq)
     for i in 2:length(grid)

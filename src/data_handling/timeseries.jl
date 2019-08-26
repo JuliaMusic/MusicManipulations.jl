@@ -59,8 +59,7 @@ function _init_timeseries_vectors(notes, grid)
     tpq = notes.tpq
     qnotes = quantize(notes, grid)
     quantizedpos = positions(qnotes)
-    realgrid = tpq .* grid
-    bins = round.(Int, realgrid)[1:end-1]
+    bins = round.(Int, tpq .* grid)[1:end-1]
     # tvec limits
     firstp = Int(qnotes[1].position)
     firstbin = findfirst(x -> x == mod(firstp, tpq), bins)
