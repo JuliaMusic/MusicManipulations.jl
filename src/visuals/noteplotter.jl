@@ -23,7 +23,7 @@ Then return the values of the y axis.
 * `st = (notes[1].position ÷ notes.tpq) * notes.tpq`  time to start plotting from
 * `fi = st + 16notes.tpq` time to stop plotting at, by default 16 quarter notes, i.e. four bars.
   Give `Inf` if you want to plot until the end of the notes.
-* `ax = gca()` the axis to plot on.
+* `ax = (PyPlot.figure(); PyPlot.gca())` the axis to plot on.
 * `cmap = "viridis"` the colormap to use for the velocity.
 * `grid = 0:0.25:1` a grid to plot along with the notes (by default the 16th notes).
   Give nothing if you don't want grid lines to be plotted.
