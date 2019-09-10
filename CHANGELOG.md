@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# 0.9.0
+* Add a heuristic so that the default behavior of `noteplotter` does not add all pitches into the y-axis ticks and labels.
+
 # 0.8.2
 * Bugfix of `noteplotter`.
 

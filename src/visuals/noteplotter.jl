@@ -27,8 +27,10 @@ Then return the values of the y axis.
 * `cmap = "viridis"` the colormap to use for the velocity.
 * `grid = 0:0.25:1` a grid to plot along with the notes (by default the 16th notes).
   Give nothing if you don't want grid lines to be plotted.
-* `names = Dict(p => pitch_to_name(p) for p in unique(pitches(notes)))`
+* `names` :
   a dictionary that given the y-axis value returns how this value should be named.
+  By default the function [`pitch_to_name`](@ref) is used, along with a
+  heuristic to only name around 7 notes.
 * `plotnote!` A function with call arguments
   `plotnote!(ax, note, cmap)` (with `cmap` a colormap instance, not a string),
   that actually plots the notes. By default plots a "piano-roll".
@@ -36,13 +38,13 @@ Then return the values of the y axis.
 The `plotnote!` argument allows for customization. The function is supposed
 to plot a note on the given axis **and return** the "value" of the note.
 See the official documentation for an example of how this is taken
-advantage of, to plot drum notes.
+advantage of to e.g. plot drum notes.
 """
 function noteplotter(notes::Notes;
     st = (notes[1].position ÷ notes.tpq) * notes.tpq,
     fi = st + 16notes.tpq,
     ax = (PyPlot.figure(); PyPlot.gca()),
-    names = Dict(p => pitch_to_name(p) for p in unique(pitches(notes))),
+    names = nothing,
     plotnote! = plotpianonote!,
     grid = 0:0.25:1,
     cmap = "viridis"
@@ -78,10 +80,29 @@ function noteplotter(notes::Notes;
     end
 
     # limits and labels
+    if names == nothing
+        yticks, ylabels = heuristic_note_names(plottedpitches)
+    else
+        yticks = plottedpitches
+        ylabels = [names[p] for p in plottedpitches]
+    end
     ax.set_xlim(st, fi)
-    ax.set_yticks(plottedpitches)
+    ax.set_yticks(yticks)
     ax.set_ylim(minimum(plottedpitches)-1, maximum(plottedpitches)+1)
-    ax.set_yticklabels([names[p] for p in plottedpitches])
+    ax.set_yticklabels(ylabels)
     ax.set_xlabel("time (ticks)")
     return plottedpitches
+end
+
+function heuristic_note_names(plottedpitches)
+    L = length(plottedpitches)
+    if L ≤ 7
+        ylabels = [pitch_to_name[p] for p in plottedpitches]
+        return plottedpitches, ylabels
+    else
+        x = L÷7
+        pitches = minimum(plottedpitches):x:maximum(plottedpitches)
+        ylabels = [pitch_to_name(p) for p in pitches]
+        return pitches, ylabels
+    end
 end
