@@ -97,7 +97,7 @@ end
 function heuristic_note_names(plottedpitches)
     L = length(plottedpitches)
     if L ≤ 7
-        ylabels = [pitch_to_name[p] for p in plottedpitches]
+        ylabels = [pitch_to_name(p) for p in plottedpitches]
         return plottedpitches, ylabels
     else
         x = L÷7
