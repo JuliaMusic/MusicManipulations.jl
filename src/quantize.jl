@@ -4,8 +4,8 @@ export isgrid, classify, quantize, quantize!, quantize_duration!
 ###############################################################################
 function isgrid(grid)
     issorted(grid) || throw(ArgumentError("Grids must be sorted."))
-    if grid[1] != 0 || grid[end] != 1
-        throw(ArgumentError("Grids must start from 0 and end in 1."))
+    if abs(grid[1] - grid[end]) != 1 
+        throw(ArgumentError("Grids must start from x and end in 1+x."))
     end
     true
 end
