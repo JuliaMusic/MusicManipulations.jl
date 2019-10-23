@@ -80,6 +80,8 @@ end
 
 end
 
+end
+
 @testset "Noninteger grid*tpq product" begin
 
     cd(@__DIR__)
