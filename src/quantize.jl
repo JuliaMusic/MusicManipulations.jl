@@ -115,14 +115,14 @@ function quantize_duration!(note::AbstractNote, grid, tpq)
     durmod = mod(note.position + note.duration, tpq)
     best = closest_realgrid(grid, durmod, tpq)
     # Check if quantization removes duration
-    final_dur = Int(grid[best]*tpq)
+    final_dur = round(Int, grid[best]*tpq)
     dist = final_dur - durmod
     note.duration += final_dur - durmod
     if note.duration == 0
         if best != length(grid)
-            note.duration += (grid[best+1] - grid[best])*tpq
+            note.duration += round(Int, (grid[best+1] - grid[best])*tpq)
         else
-            note.duration += grid[2]*tpq # grid[1] is always 0 by definition
+            note.duration += round(Int, grid[2]*tpq) # grid[1] is always 0 by definition
         end
     end
     return
