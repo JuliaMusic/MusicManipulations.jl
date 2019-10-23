@@ -95,14 +95,9 @@ function noteplotter(notes::Notes;
 end
 
 function heuristic_note_names(plottedpitches)
-    L = length(plottedpitches)
-    if L ≤ 7
-        ylabels = [pitch_to_name(p) for p in plottedpitches]
-        return plottedpitches, ylabels
-    else
-        x = L÷7
-        pitches = minimum(plottedpitches):x:maximum(plottedpitches)
-        ylabels = [pitch_to_name(p) for p in pitches]
-        return pitches, ylabels
-    end
+    mi, ma = extrema(plottedpitches)
+    notestep = max((ma-mi)÷7, 1)
+    pitches = mi:notestep:ma
+    ylabels = [pitch_to_name(p) for p in pitches]
+    return pitches, ylabels
 end
