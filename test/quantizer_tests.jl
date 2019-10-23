@@ -84,8 +84,8 @@ end
 
     cd(@__DIR__)
     grid = [0,0.383,0.73,1]
-    midi = readMIDIFile("OP002.mid")
-    notes = getnotes(midi, 1)
+    midi = readMIDIFile("serenade_full.mid")
+    notes = getnotes(midi, 4)
     tpq = 960
     qnotes = quantize(notes, grid)
     for note in qnotes
