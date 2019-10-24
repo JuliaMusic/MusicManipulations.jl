@@ -1,5 +1,5 @@
 export translate, transpose, louden, randomnotes, subdivision
-export velocities, positions, pitches, durations
+export velocities, positions, pitches, durations, relpos
 export ▷, □, ◇
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
@@ -77,18 +77,29 @@ louden(notes::Vector{N}, semitones) where {N<:AbstractNote} =
 
 ◇ = louden
 
-"""
-    subdivision(n::Int, tpq)
-Return how many ticks is the duration of
-the subdivision of a 4/4-bar into `n` equal parts, assuming the ticks per quarter
-note are `tpq`.
-
-For example, for sixteenth notes you would do `subdivision(16, tpq)`, for
-eigth-note triplets `subdivision(12, tpq)` and so on.
-"""
 subdivision(n::Int, tpq)::Int = (4*tpq)/n
 
 function timesort(notes::Notes)
     issorted(notes, by = x -> x.position) && return notes
     return Notes(sort(notes.notes, by = x -> x.position), notes.tpq)
+end
+
+"""
+    relpos(notes::Notes, grid)
+Return the *relative* positions of the notes with respect to the current
+`grid`, i.e. all notes are brought within one quarter note.
+"""
+function relpos(notes::Notes, grid)
+    tpq = notes.tpq
+    c = (grid[end-1] + (1 - grid[end-1])/2) * tpq
+    rpos = zeros(Int, length(notes))
+    for (i, n) in enumerate(notes)
+        m = mod1(Int(n.position), tpq)
+        if m ≥ c
+            rpos[i] = m - tpq
+        else
+            rpos[i] = m
+        end
+    end
+    return rpos
 end
