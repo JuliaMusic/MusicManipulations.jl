@@ -130,7 +130,7 @@ function estimate_delay_recursive(notes, grid, m)
     for i in 1:m
         delay = round(Int, estimate_delay(xnotes, grid))
         totaldelay += delay
-        xnotes = xnotes - delay
+        xnotes = translate(xnotes, -delay)
     end
     return totaldelay
 end

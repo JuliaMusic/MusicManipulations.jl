@@ -1,7 +1,7 @@
 name = "MusicManipulations"
 uuid = "274955c0-c284-5bf7-b122-5ecd51c559de"
 repo = "https://github.com/JuliaMusic/MusicManipulations.jl.git"
-version = "0.9.1"
+version = "0.10.0"
 
 [deps]
 DefaultApplication = "3f0dd361-4fe0-5fc6-8523-80b14ec94d85"
@@ -15,5 +15,5 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 MIDI = "1.4.1"
-MotifSequenceGenerator = "≥ 0.2.0"
+MotifSequenceGenerator = "1"
 julia = "1.1"
