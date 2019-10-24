@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 # 0.10.0
 * The extention of `+` and `-` for `Notes` that was introduced in version 0.8 has now been reverted. Instead, dedicated unicode symbols are now used, `▷, □, ◇`, se the docstrings of `translate, transpose, louden`.
+* `timeseries` now has more options regarding how to record the data: it is now also possible to provide a function `f` that operates on the array of notes directly.
+* performance improvements for `timeseries`.
 
 # 0.9.0
 * Add a heuristic so that the default behavior of `noteplotter` does not add all pitches into the y-axis ticks and labels.

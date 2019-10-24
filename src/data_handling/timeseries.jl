@@ -1,7 +1,7 @@
 export timeseries
 
 """
-    timeseries(notes::Notes, property, f, grid) -> tvec, ts
+    timeseries(notes::Notes, property::Symbol, f, grid) -> tvec, ts
 Produce a timeseries of the `property` of the given notes, by
 first quantizing on the given `grid` (to avoid actual quantization
 use the grid `0:1//notes.tpq:1`). Return the time vector `tvec` in ticks
@@ -23,7 +23,8 @@ function timeseries(notes, property, f, grid)
     isgrid(grid)
     if !issorted(notes, by = x -> x.position)
         error("notes must be sorted by position!")
-    elseif property ∉ (:velocity, :pitch, :duration, :position, :channel)
+    elseif !isnothing(property) &&
+        property ∉ (:velocity, :pitch, :duration, :position, :channel)
         error("Unknown property!")
     end
 
@@ -35,24 +36,39 @@ function timeseries(notes, property, f, grid)
         while j ≤ L - i && quantizedpos[i+j] == quantizedpos[i]
             j+=1
         end
-        add_timeseries_value!(ts, notes, quantizedpos, tvec, i, j, property, f)
+        # TODO: this findfirst can be optimized to start from previous entry!
+        idx = findfirst(x -> x == quantizedpos[i], tvec) # where to add the value
+        isnothing(idx) && error("nothing")
+        ts[idx] = produce_note_value(notes, property, f, i, j)
+        if property == :position # here we want timing *deviations*
+            ts[idx] -= tvec[idx]
+        end
         i += j
     end
     return tvec, ts
 end
 
-function add_timeseries_value!(ts, notes, quantizedpos, tvec, i, j, property, f)
-    idx = findfirst(x -> x == quantizedpos[i], tvec) # where to add the value
-    isnothing(idx) && error("nothing")
+"""
+    timeseries(notes::Notes, f, grid) -> tvec, ts
+If `property` is not given, then `f` should take as input be given a `Notes`
+vector and output a numeric value. This is useful for example in cases where one
+would want the timeseries of the velocities of the notes of the
+highest pitch.
+"""
+timeseries(notes, f, grid) = timeseries(notes, nothing, f, grid)
+
+function produce_note_value(notes, property::Symbol, f, i, j)
     if j > 1
         val = Float64(f(getfield(notes[k], property) for k in i:i+j-1))
     else
         val = Float64(getfield(notes[i], property))
     end
-    if property == :position #, then we want timing deviations
-        val = val - tvec[idx]
-    end
-    ts[idx] = val
+    return val
+end
+
+function produce_note_value(notes, property::Nothing, f, i, j)
+    v = notes[i:i+j-1]
+    val = Float64(f(v))
 end
 
 function _init_timeseries_vectors(notes, grid)
