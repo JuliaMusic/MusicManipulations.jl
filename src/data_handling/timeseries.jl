@@ -17,7 +17,7 @@ If the `property` is `:velocity`, `:pitch`, or `:duration` the function
 behaves exactly as described. The `property` can also be `:position`.
 In this case, the timeseries `ts` contain the timing deviations of the notes
 with respect to the `tvec` vector
-(these numbers are known as *microtiming deviations* in the literature.)
+(these numbers are known as *microtiming deviations* in the literature).
 """
 function timeseries(notes, property, f, grid)
     isgrid(grid)
@@ -29,16 +29,16 @@ function timeseries(notes, property, f, grid)
     end
 
     ts, tvec, quantizedpos = _init_timeseries_vectors(notes, grid)
-    i = previdx = 1; L = length(quantizedpos)
+    i = previdx = 1; L = length(quantizedpos); M = length(tvec)
     while i ≤ L
         # find entries of same grid bin
         j = 1
         while j ≤ L - i && quantizedpos[i+j] == quantizedpos[i]
             j+=1
         end
-        # TODO: this findfirst can be optimized to start from previous entry!
-        idx = findfirst(x -> x == quantizedpos[i], tvec) # where to add the value
-        isnothing(idx) && error("nothing")
+        # where to add the value in the timeseries:
+        idx = findfirst(x -> tvec[x] == quantizedpos[i], previdx:M) + previdx-1
+        previdx = idx
         ts[idx] = produce_note_value(notes, property, f, i, j)
         if property == :position # here we want timing *deviations*
             ts[idx] -= tvec[idx]
