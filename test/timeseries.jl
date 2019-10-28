@@ -1,4 +1,4 @@
-using Statistics
+using Statistics, Test, MusicManipulations
 
 @testset "Velocity timeseries" begin
 
@@ -113,4 +113,23 @@ readMIDIFile(joinpath(midipath, "doxy.mid"))
     lastnote = findlast(x -> x isa Float64, mtd)
     @test tvec[lastnote] + mtd[lastnote] == Int(piano[end].position)
 
+end
+
+@testset "max pitch velocity timeseries $i" for i in 1:2
+    midi = midis[i]
+
+    notes = getnotes(midi, 4)
+
+    function f(notes)
+        m, i = findmax(pitches(notes))
+        notes[i].velocity
+    end
+
+    grid = 0:1//3:1
+    tvec1, ts1 = timeseries(notes, :velocity, mean, grid)
+    tvec2, ts2 = timeseries(notes, f, grid)
+
+    @test findall(ismissing, ts1) == findall(ismissing, ts2)
+    @test tvec1 == tvec2
+    @test ts1 != ts2
 end
