@@ -50,8 +50,8 @@ end
 
 """
     timeseries(notes::Notes, f, grid) -> tvec, ts
-If `property` is not given, then `f` should take as input be given a `Notes`
-vector and output a numeric value. This is useful for example in cases where one
+If `property` is not given, then `f` should take as input a `Notes` instance
+and output a numeric value. This is useful for example in cases where one
 would want the timeseries of the velocities of the notes of the
 highest pitch.
 """
