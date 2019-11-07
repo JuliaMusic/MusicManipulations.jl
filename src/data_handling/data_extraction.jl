@@ -1,4 +1,4 @@
-export getfirstnotes, filterpitches, separatepitches, firstnotes
+export getfirstnotes, filterpitches, separatepitches, firstnotes, removepitches
 
 """
     firstnotes(notes, grid)
@@ -53,8 +53,18 @@ function filterpitches(notes::Notes{N}, filters) where {N<:AbstractNote}
     return Notes(n, notes.tpq)
 end
 
-@deprecate allowedpitches filterpitches
+"""
+    removepitches(notes::Notes, remove) -> newnotes
 
+Remove notes that have a pitch specified in `remove`.
+"""
+function removepitches(notes::Notes{N}, remove)
+    n = N[]
+    for i ∈ 1:length(notes)
+        notes[i].pitch ∉ remove && push!(n, copy(notes[i]))
+    end
+    return Notes(n, notes.tpq)
+end
 
 """
     separatepitches(notes::Notes [, allowed])
