@@ -58,7 +58,7 @@ end
 
 Remove notes that have a pitch specified in `remove`.
 """
-function removepitches(notes::Notes{N}, remove)
+function removepitches(notes::Notes{N}, remove) where {N}
     n = N[]
     for i ∈ 1:length(notes)
         notes[i].pitch ∉ remove && push!(n, copy(notes[i]))
