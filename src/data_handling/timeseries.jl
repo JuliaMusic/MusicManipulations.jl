@@ -87,6 +87,6 @@ function _init_timeseries_vectors(notes, grid)
         append!(tvec, bins .+ c*tpq)
         c += 1
     end
-    ts = fill!(Vector{Union{Float64, Missing}}(undef, length(tvec)), missing)
+    ts = Vector{Union{Float64, Missing}}(undef, length(tvec))
     return ts, tvec, quantizedpos
 end
