@@ -1,6 +1,5 @@
 export translate, transpose, louden, randomnotes, subdivision
 export velocities, positions, pitches, durations, relpos
-export ▷, □, ◇
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
@@ -31,8 +30,6 @@ end
 """
     translate(notes, ticks)
 Translate the `notes` for the given amount of `ticks`.
-
-The unicode symbol `▷` (`\\triangleright<tab>`) is equivalent to `translate`.
 """
 translate(notes::Notes, ticks) = Notes(translate(notes.notes, ticks), notes.tpq)
 translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
@@ -48,36 +45,23 @@ function translate!(notes::Notes, ticks)
     end
 end
 
-▷ = translate
-
 """
     transpose(notes, semitones)
-Transpose the `notes` for the given amount of `semitones`.
-
-The unicode symbol `□` (`\\square`) is equivalent with `transpose`.
+Transpose the `notes` by the given amount of `semitones`.
 """
 Base.transpose(notes::Notes, semitones) =
 Notes(transpose(notes.notes, semitones), notes.tpq)
 Base.transpose(notes::Vector{N}, semitones) where {N<:AbstractNote} =
 [Note(n.pitch + semitones, n.velocity, n.position, n.duration, n.channel) for n in notes]
 
-□(notes::Notes, semitones) = transpose(notes, semitones)
-□(notes::Vector, semitones) = transpose(notes, semitones)
-
 """
     louden(notes, v::Int)
-Increase the velocity of the notes by `v`.
-
-The unicode symbol `◇` (`\\mdlgwhtdiamond`) is equivalent with `louden`.
+Change the velocity of the notes by `v`.
 """
-louden(notes::Notes, semitones) =
-Notes(louden(notes.notes, semitones), notes.tpq)
-louden(notes::Vector{N}, semitones) where {N<:AbstractNote} =
-[Note(n.pitch, n.velocity + semitones, n.position, n.duration, n.channel) for n in notes]
-
-◇ = louden
-
-subdivision(n::Int, tpq)::Int = (4*tpq)/n
+louden(notes::Notes, v) =
+Notes(louden(notes.notes, v), notes.tpq)
+louden(notes::Vector{N}, v) where {N<:AbstractNote} =
+[Note(n.pitch, n.velocity + v, n.position, n.duration, n.channel) for n in notes]
 
 function timesort(notes::Notes)
     issorted(notes, by = x -> x.position) && return notes
