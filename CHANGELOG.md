@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+# 0.12.0
+* Removed the unicode symbols `▷, □, ◇`; it was a bad idea.
+* Removed plotting functionality (`musescore / noteplotter`), and moved it to MusicVisualizations.jl
+
 # 0.11.0
 * new function `removepitches`
 # 0.10.0
