@@ -6,7 +6,6 @@
 * Advanced music data extraction
 * Quantize/classify notes
 * Take your music practice to the next level
-* Print notes and midi files (the Julia `struct`s) directly into a staff using MuseScore.
 * And more!
 
 For more details please see the official documentation.
