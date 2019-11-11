@@ -6,7 +6,7 @@ os:
 
 julia:
   - 1.2
-  # - nightly
+  - nightly
 
 before_script:
   - git config --global user.name "GitUser"
