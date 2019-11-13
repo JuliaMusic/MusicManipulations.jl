@@ -68,7 +68,8 @@ function removepitches(notes::Notes{N}, remove) where {N}
 end
 
 struct Everything end
-Base.∈(::AbstractNote, ::Everything) = true
+import Base: ∈
+∈(::AbstractNote, ::Everything) = true
 
 """
     separatepitches(notes::Notes [, allowed])
