@@ -1,4 +1,5 @@
 export getfirstnotes, filterpitches, separatepitches, firstnotes, removepitches
+export estimate_delay, estimate_delay_recursive
 
 """
     firstnotes(notes, grid)
@@ -66,38 +67,32 @@ function removepitches(notes::Notes{N}, remove) where {N}
     return Notes(n, notes.tpq)
 end
 
+struct Everything end
+Base.∈(::AbstractNote, ::Everything) = true
+
 """
     separatepitches(notes::Notes [, allowed])
 
 Get a dictionary \"pitch\"=>\"notes of that pitch\".
 Optionally only keep pitches that are contained in `allowed`.
 """
-function separatepitches(notes::Notes{N}) where {N}
+function separatepitches(notes::Notes{N}, allowed = Everything()) where {N}
     separated = Dict{UInt8, Notes{N}}()
     for note in notes
-        _add_note_to_dict!(separated, note, notes.tpq)
-    end
-    return separated
-end
-
-function separatepitches(notes::Notes{N}, pitches) where {N}
-    separated = Dict{UInt8, Notes{N}}()
-    for note in notes
-        note.pitch ∈ pitches && _add_note_to_dict!(separated, note, notes.tpq)
+        note.pitch ∈ allowed && _add_note_to_dict!(separated, note, notes.tpq)
     end
     return separated
 end
 
 function _add_note_to_dict!(separated, note::N, tpq) where {N<:AbstractNote}
     if haskey(separated, note.pitch)
-        push!(separated[note.pitch], deepcopy(note))
+        push!(separated[note.pitch], copy(note))
     else
         separated[note.pitch] = Notes{N}(Vector{N}[], tpq)
-        push!(separated[note.pitch], deepcopy(note))
+        push!(separated[note.pitch], copy(note))
     end
 end
 
-export estimate_delay, estimate_delay_recursive
 
 estimate_delay(notes, sub::Int) = estimate_delay(notes,  0:(1/sub):1)
 
