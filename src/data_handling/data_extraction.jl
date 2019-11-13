@@ -68,8 +68,7 @@ function removepitches(notes::Notes{N}, remove) where {N}
 end
 
 struct Everything end
-import Base: ∈
-∈(::AbstractNote, ::Everything) = true
+Base.:∈(x, ::Everything) = true
 
 """
     separatepitches(notes::Notes [, allowed])
@@ -80,7 +79,7 @@ Optionally only keep pitches that are contained in `allowed`.
 function separatepitches(notes::Notes{N}, allowed = Everything()) where {N}
     separated = Dict{UInt8, Notes{N}}()
     for note in notes
-        note.pitch ∈ allowed && _add_note_to_dict!(separated, note, notes.tpq)
+        (note.pitch ∈ allowed) && _add_note_to_dict!(separated, note, notes.tpq)
     end
     return separated
 end

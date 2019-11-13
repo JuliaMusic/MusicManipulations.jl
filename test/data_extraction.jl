@@ -1,3 +1,5 @@
+using Test, MusicManipulations
+
 let
 
 rnotes = randomnotes(1000)
