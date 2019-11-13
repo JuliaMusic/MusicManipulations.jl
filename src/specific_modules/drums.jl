@@ -9,6 +9,7 @@ const DIGITAL = [0x26,0x28,0x33,0x35,0x3b]
 
 Get notes from midi track. Take care of Roland TD-50's ability to have velocities up to 159 for snare and ride.
 """
+getnotes_td50(midi::MIDIFile, i::Int) = getnotes_td50(midi.tracks[i], midi.tpq)
 function getnotes_td50(track::MIDI.MIDITrack, tpq = 960)
     notes = MoreVelNote[]
     tracktime = UInt(0)
