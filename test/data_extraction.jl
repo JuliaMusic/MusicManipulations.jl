@@ -40,3 +40,15 @@ end
         @test abs(d2) < 30
     end
 end
+
+@testset "combine" begin
+    # test with Array
+    shuf = [rnotes[k:5:end] for k in 1:3]
+    com = combine(shuf)
+    @test issorted(com, by = x -> x.position)
+    # test with Dict
+    sepa = separatepitches(rnotes)
+    com = combine(sepa)
+    @test com.notes == rnotes.notes
+    @test issorted(com, by = x -> x.position)
+end
