@@ -1,5 +1,6 @@
 export translate, transpose, louden, randomnotes, subdivision
 export velocities, positions, pitches, durations, relpos
+export timesort, timesort!, combine
 
 velocities(notes::Notes) = [Int(x.velocity) for x in notes]
 positions(notes::Notes) = [Int(x.position) for x in notes]
@@ -63,10 +64,39 @@ Notes(louden(notes.notes, v), notes.tpq)
 louden(notes::Vector{N}, v) where {N<:AbstractNote} =
 [Note(n.pitch, n.velocity + v, n.position, n.duration, n.channel) for n in notes]
 
-function timesort(notes::Notes)
-    issorted(notes, by = x -> x.position) && return notes
-    return Notes(sort(notes.notes, by = x -> x.position), notes.tpq)
+"""
+    timesort!(notes::Notes)
+Sort the `notes` by their temporal position.
+Non-mutating version also exists.
+"""
+function timesort!(notes::Notes)
+    sort!(notes.notes, by = x -> x.position)
+    return notes
 end
+timesort(notes) = timesort!(copy(notes))
+
+"""
+    combine(note_container) -> notes
+Combine the given container (either `Array{Notes}` or `Dict{Any, Notes}`) into
+a single `Notes` instance. In the process, sort the notes by position in the
+final container.
+"""
+function combine(notearray::AbstractArray{<:Notes})
+    notes = copy(notearray[1])
+    for i in 2:length(notearray)
+        append!(notes, notearray[i])
+    end
+    timesort!(notes)
+end
+
+function combine(notedict::Dict{<:Any, Notes{N}}) where {N}
+    n = Notes(N[], first(values(notedict)).tpq)
+    for (k, v) in notedict
+        append!(n, v)
+    end
+    timesort!(n)
+end
+
 
 """
     relpos(notes::Notes, grid)

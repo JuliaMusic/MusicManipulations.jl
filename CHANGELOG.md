@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# 1.1.0
+* New functions `timesort!` and `combine`.
+# 1.0.0
+Identical to 0.12.0.
 # 0.12.0
 * Removed the unicode symbols `▷, □, ◇`; it was a bad idea.
 * Removed plotting functionality (`musescore / noteplotter`), and moved it to MusicVisualizations.jl
