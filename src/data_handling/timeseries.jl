@@ -1,7 +1,7 @@
 export timeseries
 
 """
-    timeseries(notes::Notes, property::Symbol, f, grid) -> tvec, ts
+    timeseries(notes::Notes, property::Symbol, f, grid; segmenting = false) -> tvec, ts
 Produce a timeseries of the `property` of the given notes, by
 first quantizing on the given `grid` (to avoid actual quantization
 use the grid `0:1//notes.tpq:1`). Return the time vector `tvec` in ticks
@@ -18,8 +18,11 @@ behaves exactly as described. The `property` can also be `:position`.
 In this case, the timeseries `ts` contain the timing deviations of the notes
 with respect to the `tvec` vector
 (these numbers are known as *microtiming deviations* in the literature).
+
+If the keyword argument 'segmenting' is given as 'true', the notes are segmented according to the grid
+in order to respect the information of their duration. otherwise the notes are treated as point events with no duration.
 """
-function timeseries(notes, property, f, grid)
+function timeseries(notes, property, f, grid; segmenting = false)
     isgrid(grid)
     if !issorted(notes, by = x -> x.position)
         error("notes must be sorted by position!")
@@ -39,9 +42,23 @@ function timeseries(notes, property, f, grid)
         # where to add the value in the timeseries:
         idx = findfirst(x -> tvec[x] == quantizedpos[i], previdx:M) + previdx-1
         previdx = idx
-        ts[idx] = produce_note_value(notes, property, f, i, j)
-        if property == :position # here we want timing *deviations*
-            ts[idx] -= tvec[idx]
+        if segmenting == false
+            ts[idx] = produce_note_value(notes, property, f, i, j)
+            if property == :position # here we want timing *deviations*
+                ts[idx] -= tvec[idx]
+            end
+        elseif segmenting == true
+            if i+j <= length(quantizedpos)
+                nxtidx = findfirst(x -> tvec[x] == quantizedpos[i+j], previdx:M) + previdx-1
+            else
+                nxtidx = findfirst(x -> tvec[x] == quantizedpos[i], previdx:M) + previdx-1
+            end
+            for unit in 0:nxtidx-idx-1
+                ts[idx+unit] = produce_note_value(notes, property, f, i, j)
+                if property == :position # here we want timing *deviations*
+                    ts[idx+unit] -= tvec[idx]
+                end
+            end
         end
         i += j
     end
@@ -83,7 +100,7 @@ function _init_timeseries_vectors(notes, grid)
     # Create vectors
     tvec = (firstp÷tpq)*tpq .+ bins[firstbin:end]
     c = firstp÷tpq + 1
-    while tvec[end] < notes[end].position
+    while tvec[end] < notes[end].position + notes[end].duration
         append!(tvec, bins .+ c*tpq)
         c += 1
     end
