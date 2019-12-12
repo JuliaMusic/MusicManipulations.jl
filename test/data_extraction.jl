@@ -42,6 +42,7 @@ end
 end
 
 @testset "combine" begin
+    rnotes = randomnotes(1000)
     # test with Array
     shuf = [rnotes[k:5:end] for k in 1:3]
     com = combine(shuf)
