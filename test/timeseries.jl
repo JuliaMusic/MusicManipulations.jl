@@ -133,3 +133,11 @@ end
     @test tvec1 == tvec2
     @test ts1 != ts2
 end
+
+#test of segmenting functionality
+notes_to_segment = Notes()
+push!(notes_to_segment,Note(67,70,0,189))
+push!(notes_to_segment,Note(70,75,330,125))
+push!(notes_to_segment,Note(60,73,610,829))
+tvec, ts = timeseries(notes_to_segment, :pitch, maximum, 0:1//6:1; segmenting = true)
+@test ts == Union{Missing, Float64}[67.0, missing, 70.0, missing, 60.0, 60.0, 60.0, 60.0, 60.0, missing, missing, missing]
