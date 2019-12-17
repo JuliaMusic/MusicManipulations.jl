@@ -58,11 +58,10 @@ end
 Quantizes the positions and durations of `notes` and segments them according to the duration of a grid unit.
 """
 function segment_notes(notes, grid)
-    tpq = notes.tpq
-    segment_duration = Int(grid[2]*tpq)
-    grid_division = Int(tpq/segment_duration)
+    segment_duration = Int(grid[2]*notes.tpq)
+    grid_division = Int(notes.tpq/segment_duration)
     qnotes = quantize(notes, 0:1//grid_division:1)
-    segmented_notes = Notes()
+    segmented_notes = Notes(;tpq = notes.tpq)
     for qn in qnotes
         for segment_idx in 0:round(Int,qn.duration/segment_duration)-1
             push!(segmented_notes, Note(qn.pitch, qn.velocity, qn.position + segment_idx*segment_duration, segment_duration))
