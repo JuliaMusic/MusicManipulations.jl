@@ -24,9 +24,6 @@ in order to respect the information of their duration. otherwise the notes are t
 """
 function timeseries(notes, property, f, grid; segmenting = false)
     isgrid(grid)
-    if segmenting == true
-        notes = timesort!(segment_notes(notes, grid))
-    end
     if !issorted(notes, by = x -> x.position)
         error("notes must be sorted by position!")
     elseif !isnothing(property) &&
@@ -67,7 +64,7 @@ function segment_notes(notes, grid)
             push!(segmented_notes, Note(qn.pitch, qn.velocity, qn.position + segment_idx*segment_duration, segment_duration))
         end
     end
-    return segmented_notes
+    return timesort!(segmented_notes)
 end
 
 """
