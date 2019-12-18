@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# 1.2.0
+* New function `segment(notes)`.
+* New option `segmented` in `timeseries`.
+
 # 1.1.0
 * New functions `timesort!` and `combine`.
 # 1.0.0

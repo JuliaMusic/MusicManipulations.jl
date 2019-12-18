@@ -1,7 +1,7 @@
-export timeseries
+export timeseries, segment
 
 """
-    timeseries(notes::Notes, property::Symbol, f, grid) -> tvec, ts
+    timeseries(notes::Notes, property::Symbol, f, grid; segmented = false) -> tvec, ts
 Produce a timeseries of the `property` of the given notes, by
 first quantizing on the given `grid` (to avoid actual quantization
 use the grid `0:1//notes.tpq:1`). Return the time vector `tvec` in ticks
@@ -18,16 +18,23 @@ behaves exactly as described. The `property` can also be `:position`.
 In this case, the timeseries `ts` contain the timing deviations of the notes
 with respect to the `tvec` vector
 (these numbers are known as *microtiming deviations* in the literature).
+
+If 'segmented = true', the notes are segmented according to the grid in order to
+respect the information of their duration, see [`segment`](@ref).
+Otherwise the notes are treated as point events with no duration
+(it makes no sense to choose `:duration` with `segmented`).
 """
-function timeseries(notes, property, f, grid)
+function timeseries(notes, property, f, grid; segmented = false)
     isgrid(grid)
+    if segmented == true
+        notes = segment(notes, grid)
+    end
     if !issorted(notes, by = x -> x.position)
         error("notes must be sorted by position!")
     elseif !isnothing(property) &&
         property ∉ (:velocity, :pitch, :duration, :position, :channel)
         error("Unknown property!")
     end
-
     ts, tvec, quantizedpos = _init_timeseries_vectors(notes, grid)
     i = previdx = 1; L = length(quantizedpos); M = length(tvec)
     while i ≤ L
@@ -46,6 +53,26 @@ function timeseries(notes, property, f, grid)
         i += j
     end
     return tvec, ts
+end
+
+"""
+    segment(notes, grid) → segmented_notes
+Quantize the positions and durations of `notes` and then segment them (i.e. cut them into
+pieces) according to the duration of a grid unit. This function only works with
+`AbstractRange` grids, i.e. equi-spaced grids like `0:1//3:1`.
+"""
+function segment(notes::Notes{N}, grid::AbstractRange) where {N}
+    isgrid(grid)
+    segment_duration = Int(step(grid)*notes.tpq)
+    qnotes = quantize(notes, grid)
+    segmented_notes = Notes(Vector{N}(), notes.tpq)
+    for qn in qnotes
+        for segment_idx in 0:round(Int, qn.duration/segment_duration)-1
+            push!(segmented_notes, N(qn.pitch, qn.velocity,
+                  qn.position + segment_idx*segment_duration, segment_duration))
+        end
+    end
+    return timesort!(segmented_notes)
 end
 
 """

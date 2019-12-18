@@ -133,3 +133,20 @@ end
     @test tvec1 == tvec2
     @test ts1 != ts2
 end
+
+@testset "Segmentation" begin
+    #test of segmenting functionality
+    notes_to_segment = Notes()
+    push!(notes_to_segment,Note(67,70,15,540))
+    push!(notes_to_segment,Note(70,75,330,125))
+    push!(notes_to_segment,Note(60,73,610,829))
+    tvec, ts = timeseries(notes_to_segment, :pitch, maximum, 0:1//6:1; segmented = true)
+    ts[findall(ismissing,ts)] .= 0 # replace missing with zeros
+    @test ts == [67.0, 67.0, 70.0, 0.0, 60.0, 60.0, 60.0, 60.0, 60.0, 0.0, 0.0, 0.0]
+
+    dumnotes = Notes([Note(5, 5, 0, 960)])
+    snotes = segment(dumnotes, 0:1//4:1)
+    @test all(n -> n.duration == 240, snotes)
+    @test all(n -> n.velocity == 5, snotes)
+    @test length(snotes) == 4
+end
