@@ -133,3 +133,12 @@ end
     @test tvec1 == tvec2
     @test ts1 != ts2
 end
+
+#test of segmenting functionality
+notes_to_segment = Notes()
+push!(notes_to_segment,Note(67,70,15,540))
+push!(notes_to_segment,Note(70,75,330,125))
+push!(notes_to_segment,Note(60,73,610,829))
+tvec, ts = timeseries(notes_to_segment, :pitch, maximum, 0:1//6:1; segmenting = true)
+ts[findall(ismissing,ts)] .= 0
+@test ts == [67.0, 67.0, 70.0, 0.0, 60.0, 60.0, 60.0, 60.0, 60.0, 0.0, 0.0, 0.0]
