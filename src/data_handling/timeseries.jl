@@ -24,6 +24,9 @@ in order to respect the information of their duration. otherwise the notes are t
 """
 function timeseries(notes, property, f, grid; segmenting = false)
     isgrid(grid)
+    if segmenting == true
+        notes = segment_notes(notes, grid)
+    end
     if !issorted(notes, by = x -> x.position)
         error("notes must be sorted by position!")
     elseif !isnothing(property) &&
