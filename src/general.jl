@@ -75,8 +75,8 @@ N(n.pitch, n.velocity+ticks, n.position, n.duration, n.channel)
 
 """
     timesort!(notes::Notes)
-Sort the `notes` by their temporal position.
-Non-mutating version also exists.
+In-place sort the `notes` by their temporal position.
+Use `timesort` for a non-mutating version.
 """
 function timesort!(notes::Notes)
     sort!(notes.notes, by = x -> x.position)
@@ -90,20 +90,31 @@ Combine the given container (either `Array{Notes}` or `Dict{Any, Notes}`) into
 a single `Notes` instance. In the process, sort the notes by position in the
 final container.
 """
-function combine(notearray::AbstractArray{<:Notes})
+function combine(notearray::AbstractArray{<:Notes}, tsort = true)
     notes = copy(notearray[1])
     for i in 2:length(notearray)
         append!(notes, notearray[i])
     end
-    timesort!(notes)
+    tsort && timesort!(notes)
+    return notes
 end
 
-function combine(notedict::Dict{<:Any, Notes{N}}) where {N}
+function combine(notearray::AbstractArray{<:AbstractArray{<:AbstractNote}}, tsort=true)
+    notes = copy(notearray[1])
+    for i in 2:length(notearray)
+        append!(notes, notearray[i])
+    end
+    tsort && timesort!(notes)
+    return notes
+end
+
+function combine(notedict::Dict{<:Any, Notes{N}}, tsort = true) where {N}
     n = Notes(N[], first(values(notedict)).tpq)
     for (k, v) in notedict
         append!(n, v)
     end
-    timesort!(n)
+    tsort && timesort!(n)
+    return n
 end
 
 
@@ -125,4 +136,22 @@ function relpos(notes::Notes, grid)
         end
     end
     return rpos
+end
+
+"""
+    repeat(notes, i = 1)
+Repeat the `notes` `i` times, by successively adding duplicates of `notes`
+shifted by the total duration of `notes`. Return a single `Notes` container
+for convenience.
+
+The function assumes that notes are `timesort`ed.
+"""
+Base.repeat(n::Notes, i::Int = 1) = Notes(repeat(n.notes, i), n.tpq)
+function Base.repeat(n::Vector{<:AbstractNote}, i::Int = 1)
+    maxdur = maximum(a.position + a.duration for a in n)
+    r = [copy(n)]
+    for j in 1:i
+        push!(r, translate(r[end], maxdur))
+    end
+    return combine(r, false)
 end

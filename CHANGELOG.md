@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+# 1.4.0
+* New function `repeat`.
+* `combine` now works with `Vector{Vector{<:Note}}` as well.
+
 # 1.3.0
 * `translate, transpose, louden` now also work on single notes.
 
