@@ -31,10 +31,13 @@ end
 """
     translate(notes, ticks)
 Translate the `notes` for the given amount of `ticks`.
+Also works for a single note.
 """
 translate(notes::Notes, ticks) = Notes(translate(notes.notes, ticks), notes.tpq)
 translate(notes::Vector{N}, ticks) where {N<:AbstractNote} =
 [N(n.pitch, n.velocity, n.position + ticks, n.duration, n.channel) for n in notes]
+translate(n::N, ticks) where {N<:AbstractNote} =
+N(n.pitch, n.velocity, n.position+ticks, n.duration, n.channel)
 
 """
     translate!(notes, ticks)
@@ -49,20 +52,26 @@ end
 """
     transpose(notes, semitones)
 Transpose the `notes` by the given amount of `semitones`.
+Also works for a single note.
 """
 Base.transpose(notes::Notes, semitones) =
 Notes(transpose(notes.notes, semitones), notes.tpq)
 Base.transpose(notes::Vector{N}, semitones) where {N<:AbstractNote} =
 [Note(n.pitch + semitones, n.velocity, n.position, n.duration, n.channel) for n in notes]
+Base.transpose(n::N, ticks) where {N<:AbstractNote} =
+N(n.pitch+ticks, n.velocity, n.position, n.duration, n.channel)
 
 """
     louden(notes, v::Int)
-Change the velocity of the notes by `v`.
+Change the velocity of the notes by `v` (which could also be negative).
+Also works for a single note.
 """
 louden(notes::Notes, v) =
 Notes(louden(notes.notes, v), notes.tpq)
 louden(notes::Vector{N}, v) where {N<:AbstractNote} =
 [Note(n.pitch, n.velocity + v, n.position, n.duration, n.channel) for n in notes]
+Base.louden(n::N, ticks) where {N<:AbstractNote} =
+N(n.pitch, n.velocity+ticks, n.position, n.duration, n.channel)
 
 """
     timesort!(notes::Notes)

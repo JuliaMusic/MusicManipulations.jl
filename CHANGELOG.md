@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+# 1.3.0
+* `translate, transpose, louden` now also work on single notes.
 
 # 1.2.0
 * New function `segment(notes)`.
