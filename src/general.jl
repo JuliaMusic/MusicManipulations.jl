@@ -70,7 +70,7 @@ louden(notes::Notes, v) =
 Notes(louden(notes.notes, v), notes.tpq)
 louden(notes::Vector{N}, v) where {N<:AbstractNote} =
 [Note(n.pitch, n.velocity + v, n.position, n.duration, n.channel) for n in notes]
-Base.louden(n::N, ticks) where {N<:AbstractNote} =
+louden(n::N, ticks) where {N<:AbstractNote} =
 N(n.pitch, n.velocity+ticks, n.position, n.duration, n.channel)
 
 """
