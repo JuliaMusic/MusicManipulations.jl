@@ -50,6 +50,10 @@ using Statistics, Test, MusicManipulations
     @test count(ismissing, [tseries[i] for i in 2:2:159*2+2]) == 160
     @test count(x -> x isa Float64, [tseries[i] for i in 2:2:159*2+2]) == 0
 
+    tvec, tseries = timeseries(notes, :velocity, mean, grid; missingval = 0.0)
+    @test tseries isa Vector{Float64}
+    @test count(iszero, [tseries[i] for i in 2:2:159*2+2]) == 160
+
 end
 
 @testset "Pitch timeseries" begin
