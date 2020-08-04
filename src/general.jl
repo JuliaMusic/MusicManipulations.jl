@@ -7,6 +7,9 @@ positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int(x.pitch) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
 
+using ARFIMA
+using Random
+
 """
     randomnotes(n::Int, tpq = 960)
 Generate some random notes that start sequentially.
@@ -154,4 +157,16 @@ function Base.repeat(n::Vector{<:AbstractNote}, i::Int = 1)
         push!(r, translate(r[end], maxdur))
     end
     return combine(r, false)
+end
+
+"""
+    humanize((notes::Notes, d, φ)
+Generate pink noise with varying exponents from -0.5 to -1.5.
+"""
+function humanize(notes::Notes, σ=0.2, d=0.25, φ=SVector(-0.5, -1.5))
+    noise = arfima(length(notes), σ, d, φ)
+    for j in 1:length(noise)
+        notes[j].position = notes[j].position + floor(noise[j])
+    end
+    return notes
 end
