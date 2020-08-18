@@ -160,13 +160,17 @@ function Base.repeat(n::Vector{<:AbstractNote}, i::Int = 1)
 end
 
 """
-    humanize((notes::Notes, d, φ)
+    humanize!((notes::Notes, d, φ)
 Generate pink noise with varying exponents from -0.5 to -1.5.
 """
-function humanize(notes::Notes, σ=0.2, d=0.25, φ=SVector(-0.5, -1.5))
-    noise = arfima(length(notes), σ, d, φ)
-    for j in 1:length(noise)
-        notes[j].position = notes[j].position + floor(noise[j])
+function humanize!(notes::Notes, property, σ=0.2, noisetype, d=0.25, φ=SVector(-0.5, -1.5))
+    if noisetype == :power_law
+        if method = :ARFIMA
+            noise = arfima(length(notes), σ, d, φ)
+        end
+        for j in 1:length(noise)
+            setproperty!(notes[j], property, getfield(notes[j], property) + floor(noise[j]))
+        end
     end
     return notes
 end
