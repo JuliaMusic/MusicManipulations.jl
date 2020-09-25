@@ -5,7 +5,7 @@ os:
   - osx
 
 julia:
-  - 1.2
+  - 1
   # - nightly # commented to save energy and time
 
 before_script:
