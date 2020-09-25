@@ -7,11 +7,12 @@ const φ0 = ARFIMA.SVector(-0.5, -1.5)
     humanize!(notes, property, σ, noise = :ARFIMA; kwargs...)
 Humanize given `notes` by adding noise of standard deviation `σ` to their `property`,
 typically either `:position` or `:velocity`. Research[^Datseris2019] suggests that `σ`
-should be around 40 (for `position`) but that depends on the BPM, and around 5 for `:velocity`.
+should be around 40 (for `position`) but that depends on the BPM, and around 10 for `:velocity`.
 
 The `noise` argument decides the type of noise:
 * `:ARFIMA` uses ARFIMA.jl and attempts to generate a power-law correlated (pink) noise.
   Keywords `d = 0.25, φ = SVector(-0.5, -1.5)` are propagated to function `arfima`.
+* `:white` plain ol' white noise.
 
 Use `humanize` for a non-modifying version.
 
@@ -20,7 +21,9 @@ Use `humanize` for a non-modifying version.
 function humanize!(n::Notes, property, σ, noise = :ARFIMA; d=0.25, φ=φ0)
     N = length(n)
     if noise == :ARFIMA
-        ξ = arfima(length(n), 1.0, d, φ)
+        ξ = arfima(N, 1.0, d, φ)
+    elseif noise == :white
+        ξ = randn(N)
     else
         error("Unrecognized noise type")
     end
