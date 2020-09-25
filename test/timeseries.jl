@@ -154,10 +154,3 @@ end
     @test all(n -> n.velocity == 5, snotes)
     @test length(snotes) == 4
 end
-
-@testset "humanize" begin
-    #test of humanize functionality
-    notes = randomnotes(10)
-    humanize_notes = humanize(notes)
-    @test !all([notes[i].position for i in 1:10] .≈ humanize_notes)
-end

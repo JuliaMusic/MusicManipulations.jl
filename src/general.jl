@@ -7,8 +7,6 @@ positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int(x.pitch) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
 
-using Random
-
 """
     randomnotes(n::Int, tpq = 960)
 Generate some random notes that start sequentially.
