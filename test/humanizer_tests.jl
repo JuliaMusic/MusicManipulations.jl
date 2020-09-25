@@ -8,6 +8,6 @@ for n in notes; n.velocity = 100; end
 hnotes = humanize(notes, :velocity, 10)
 @test any(i -> notes[i].velocity ≠ hnotes[i].velocity, 1:length(notes))
 σ = std(velocities(hnotes))
-@test σ ≈ 10.0
+@test 9.5 ≤ σ ≤ 10.5
 
 end
