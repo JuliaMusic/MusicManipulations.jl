@@ -7,7 +7,6 @@ positions(notes::Notes) = [Int(x.position) for x in notes]
 pitches(notes::Notes) = [Int(x.pitch) for x in notes]
 durations(notes::Notes) = [Int(x.duration) for x in notes]
 
-using ARFIMA
 using Random
 
 """
@@ -157,20 +156,4 @@ function Base.repeat(n::Vector{<:AbstractNote}, i::Int = 1)
         push!(r, translate(r[end], maxdur))
     end
     return combine(r, false)
-end
-
-"""
-    humanize!((notes::Notes, d, φ)
-Generate pink noise with varying exponents from -0.5 to -1.5.
-"""
-function humanize!(notes::Notes, property, σ=0.2, noisetype, d=0.25, φ=SVector(-0.5, -1.5))
-    if noisetype == :power_law
-        if method = :ARFIMA
-            noise = arfima(length(notes), σ, d, φ)
-        end
-        for j in 1:length(noise)
-            setproperty!(notes[j], property, getfield(notes[j], property) + floor(noise[j]))
-        end
-    end
-    return notes
 end

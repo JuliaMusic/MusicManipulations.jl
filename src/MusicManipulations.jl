@@ -8,6 +8,8 @@ include("general.jl")
 include("midifiles.jl")
 include("quantize.jl")
 include("scale.jl")
+include("humanize.jl")
+
 include("data_handling/data_extraction.jl")
 include("data_handling/timeseries.jl")
 
