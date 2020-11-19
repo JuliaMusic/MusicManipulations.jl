@@ -82,7 +82,7 @@ and output a numeric value. This is useful for example in cases where one
 would want the timeseries of the velocities of the notes of the
 highest pitch.
 """
-timeseries(notes, f, grid) = timeseries(notes, nothing, f, grid)
+timeseries(notes, f, grid; segmented = false) = timeseries(notes, nothing, f, grid; segmented = false)
 
 function produce_note_value(notes, property::Symbol, f, i, j)
     if j > 1
