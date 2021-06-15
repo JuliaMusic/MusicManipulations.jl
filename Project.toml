@@ -1,7 +1,7 @@
 name = "MusicManipulations"
 uuid = "274955c0-c284-5bf7-b122-5ecd51c559de"
 repo = "https://github.com/JuliaMusic/MusicManipulations.jl.git"
-version = "1.6.2"
+version = "1.6.3"
 
 [deps]
 ARFIMA = "9d0fb3db-ba49-4108-bc86-650b3813b6d5"
