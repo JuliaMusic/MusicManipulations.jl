@@ -28,7 +28,7 @@ end
 end
 
 @testset "estimate delay" begin
-    for midi in (readMIDIFile("serenade_full.mid"), readMIDIFile(testmidi()))
+    for midi in (load("serenade_full.mid"), load(testmidi()))
         piano = getnotes(midi, 4)
 
         d = estimate_delay(piano, 0:1//3:1)

@@ -1,4 +1,4 @@
-using MIDI: AbstractNote,name_to_pitch
+using MIDI: name_to_pitch
 export NamedNote
 
 """

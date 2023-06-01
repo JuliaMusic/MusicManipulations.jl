@@ -30,7 +30,7 @@ function average_swing_ratio(notes::Notes, asr_method::String)
     end
 
     # Create Swing ratios array
-    for i in 1:length(swingnotes)
+    for i in eachindex(swingnotes)
         pos = Int64(swingnotes[i].position)
         posmod = mod(pos, tpq)
         push!(sr, posmod/(tpq-posmod))

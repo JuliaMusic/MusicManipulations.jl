@@ -2,7 +2,7 @@ using Test
 
 let
 cd(@__DIR__)
-midi = readMIDIFile("serenade_full.mid")
+midi = load("serenade_full.mid")
 piano = midi.tracks[4]
 notes = getnotes(piano, midi.tpq)
 tpq = 960
@@ -86,7 +86,7 @@ end
 
     cd(@__DIR__)
     grid = [0,0.383,0.73,1]
-    midi = readMIDIFile("serenade_full.mid")
+    midi = load("serenade_full.mid")
     notes = getnotes(midi, 4)
     tpq = 960
     qnotes = quantize(notes, grid)
