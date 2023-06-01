@@ -48,7 +48,7 @@ Only keep the notes that have a pitch specified in `filters` (one or many pitche
 """
 function filterpitches(notes::Notes{N}, filters) where {N<:AbstractNote}
     n = N[]
-    for i ∈ eachindex(notes)
+    for i ∈ 1:length(notes)
         notes[i].pitch ∈ filters && push!(n, copy(notes[i]))
     end
     return Notes(n, notes.tpq)
@@ -61,7 +61,7 @@ Remove notes that have a pitch specified in `remove`.
 """
 function removepitches(notes::Notes{N}, remove) where {N}
     n = N[]
-    for i ∈ eachindex(notes)
+    for i ∈ 1:length(notes)
         notes[i].pitch ∉ remove && push!(n, copy(notes[i]))
     end
     return Notes(n, notes.tpq)
