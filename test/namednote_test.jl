@@ -15,7 +15,6 @@ using Test, MusicManipulations
     @test nns[3].name == "E4"
     
     cn = Note("C#4")
-    @show pitch_to_name(cn.pitch)
     nn3 = NamedNote(cn)
     @test nn3.name == "C♯4"
 end
