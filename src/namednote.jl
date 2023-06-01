@@ -1,5 +1,5 @@
-using MIDI: name_to_pitch
-export NamedNote
+using MIDI: name_to_pitch, pitch_to_name, Note
+export NamedNote,NamedNotes
 
 """
     NamedNote(name, pitch, velocity, position, duration, channel = 0) <: AbstractNote
@@ -45,7 +45,7 @@ mutable struct NamedNote <: AbstractNote
         elseif velocity > 0x7F
             error( "Velocity must be less than 128")
             # check if match the regex
-        elseif !occursin(r"^[A-G][#b]?\d?$",name)
+        elseif !occursin(r"^[A-G][#b♯♭]?\d?$",name)
             error("Invalid note pitch name")
         elseif name_to_pitch(name) != pitch
             error("The note name does not match the pitch")
@@ -53,11 +53,11 @@ mutable struct NamedNote <: AbstractNote
             if !isnumeric(name[end])
                 name *= "5"
             end
-            
+            @show name[prevind(name,end,1)]
             # store flat use "♭", store sharp use "♯"
-            if name[end-1] == "b"
+            if name[prevind(name,end,1)] == 'b'
                 name = replace(name,"b"=>"♭")
-            elseif name[end-1] == "#"
+            elseif name[prevind(name,end,1)] == '#'
                 name = replace(name,"#"=>"♯")
             end
 
@@ -67,6 +67,13 @@ end
 
 NamedNote(pitch_name::String; position = 0, velocity = 100, duration = 960, channel = 0) = 
     NamedNote(pitch_name, name_to_pitch(pitch_name), velocity, position, duration, channel)
+
+NamedNote(n::Note; pitch_name::String = "") = 
+    length(pitch_name) == 0 ? NamedNote(pitch_to_name(n.pitch), n.pitch, n.position, n.velocity, n.duration, n.channel) : NamedNote(name, n.pitch, n.position, n.velocity, n.duration, n.channel) 
+
+NamedNotes(notes_string::String; tpq::Int = 960) = Notes([NamedNote(String(s)) for s in split(notes_string," ")], tpq)
+
+Note(n::NamedNote) = Note(n.pitch, n.position, n.velocity, n.duration, n.channel)
 
 function Base.show(io::IO, note::NamedNote) 
     nn = rpad(note.name, 3)
