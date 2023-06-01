@@ -41,7 +41,7 @@ NamedNote("Db5") == NamedNote("C#5")
 * `position::UInt` : Position in absolute time (since beginning of track), in ticks.
 * `duration::UInt` : Duration in ticks.
 * `channel::UInt8 = 0` : Channel of the track that the note is played on.
-  Cannot be higher than 127 (0x7F).
+  Cannot be higher than 127 (0x7F). 
 """
 mutable struct NamedNote <: AbstractNote
     name::String
