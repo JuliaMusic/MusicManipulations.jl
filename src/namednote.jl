@@ -82,7 +82,7 @@ NamedNote(n::Note; pitch_name::String = "") =
 
 NamedNotes(notes_string::String; tpq::Int = 960) = Notes([NamedNote(String(s)) for s in split(notes_string," ")], tpq)
 
-Note(n::NamedNote) = Note(name_to_pitch(n.pitch), n.position, n.velocity, n.duration, n.channel)
+Note(n::NamedNote) = Note(name_to_pitch(n.name), n.position, n.velocity, n.duration, n.channel)
 
 function Base.show(io::IO, note::NamedNote) 
     nn = rpad(note.name, 3)

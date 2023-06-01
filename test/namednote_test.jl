@@ -14,7 +14,7 @@ using Test, MusicManipulations
     @test nns[2].name == "D♭5"
     @test nns[3].name == "E4"
     
-    cn = Note("C#4")
-    nn3 = NamedNote(cn)
-    @test nn3.name == "C♯4"
+    @test NamedNote(Note("C#4")) == NamedNote(Note("Db4"))
+
+    @test Note(NamedNote("C#4")) == Note(NamedNote("Db4"))
 end
