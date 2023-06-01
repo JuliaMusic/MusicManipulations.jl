@@ -33,13 +33,12 @@ NamedNote("Db5") == NamedNote("C#5")
 """
 mutable struct NamedNote <: AbstractNote
     name::String
-    pitch::UInt8
     velocity::UInt8
     position::UInt
     duration::UInt
     channel::UInt8
 
-    NamedNote(name, pitch, velocity, position, duration, channel = 0) =
+    NamedNote(name, velocity, position, duration, channel = 0) =
         if channel > 0x7F
             error( "Channel must be less than 128" )
         elseif velocity > 0x7F
@@ -47,8 +46,6 @@ mutable struct NamedNote <: AbstractNote
             # check if match the regex
         elseif !occursin(r"^[A-G][#b♯♭]?\d?$",name)
             error("Invalid note pitch name")
-        elseif name_to_pitch(name) != pitch
-            error("The note name does not match the pitch")
         else
             if !isnumeric(name[end])
                 name *= "5"
@@ -61,19 +58,19 @@ mutable struct NamedNote <: AbstractNote
                 name = replace(name,"#"=>"♯")
             end
 
-            new(name, pitch, velocity, position, duration, channel)
+            new(name, velocity, position, duration, channel)
         end
 end
 
 NamedNote(pitch_name::String; position = 0, velocity = 100, duration = 960, channel = 0) = 
-    NamedNote(pitch_name, name_to_pitch(pitch_name), velocity, position, duration, channel)
+    NamedNote(pitch_name, velocity, position, duration, channel)
 
 NamedNote(n::Note; pitch_name::String = "") = 
-    length(pitch_name) == 0 ? NamedNote(pitch_to_name(n.pitch), n.pitch, n.position, n.velocity, n.duration, n.channel) : NamedNote(name, n.pitch, n.position, n.velocity, n.duration, n.channel) 
+    length(pitch_name) == 0 ? NamedNote(pitch_to_name(n.pitch), n.position, n.velocity, n.duration, n.channel) : NamedNote(name, n.position, n.velocity, n.duration, n.channel) 
 
 NamedNotes(notes_string::String; tpq::Int = 960) = Notes([NamedNote(String(s)) for s in split(notes_string," ")], tpq)
 
-Note(n::NamedNote) = Note(n.pitch, n.position, n.velocity, n.duration, n.channel)
+Note(n::NamedNote) = Note(pitch_to_name(n.pitch), n.position, n.velocity, n.duration, n.channel)
 
 function Base.show(io::IO, note::NamedNote) 
     nn = rpad(note.name, 3)
@@ -83,3 +80,11 @@ function Base.show(io::IO, note::NamedNote)
     "pos = $(Int(note.position)), "*
     "dur = $(Int(note.duration))"*chpr)
 end
+
+import Base.==
+==(n1::NamedNote, n2::NamedNote) =
+    name_to_pitch(n1.name) == name_to_pitch(n2.name) &&
+    n1.duration == n2.duration &&
+    n1.position == n2.position &&
+    n1.channel == n2.channel &&
+    n1.velocity == n2.velocity
