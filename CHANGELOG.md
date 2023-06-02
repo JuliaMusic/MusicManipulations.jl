@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# 1.7.0
+
+* New type `NamedNote`.
+
 # 1.5.0
 * Option `missingval` for `timeseries`.
 

@@ -1,10 +1,11 @@
 name = "MusicManipulations"
 uuid = "274955c0-c284-5bf7-b122-5ecd51c559de"
 repo = "https://github.com/JuliaMusic/MusicManipulations.jl.git"
-version = "1.6.3"
+version = "1.7.0"
 
 [deps]
 ARFIMA = "9d0fb3db-ba49-4108-bc86-650b3813b6d5"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 MIDI = "f57c4921-e30c-5f49-b073-3f2f2ada663e"
 MotifSequenceGenerator = "7d228ccb-0fc9-53c8-a429-8c9b5b572bc3"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -18,6 +19,7 @@ MIDI = "1.4.1, 2.0"
 MotifSequenceGenerator = "1.0"
 Reexport = "0.2, 0.3, 1"
 StatsBase = "0.32, 0.33"
+DataStructures = "0.18"
 julia = "1.1"
 
 [extras]

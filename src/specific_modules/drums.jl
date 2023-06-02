@@ -121,7 +121,7 @@ function rm_hihatfake!(notes::Notes;
    end
 
    deletes = Int[]
-   for i = 1:length(notes)
+   for i = eachindex(notes)
        if notes[i].pitch in cut_pitches && notes[i].velocity ≤ cutoff_vel
            push!(deletes, i)
        end

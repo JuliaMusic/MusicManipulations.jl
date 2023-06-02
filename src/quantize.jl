@@ -63,7 +63,7 @@ end
 function classify(notes::Notes, grid)
     isgrid(grid)
     r = zeros(Int, length(notes))
-    for i in 1:length(notes)
+    for i in eachindex(notes)
         r[i] = classify(notes[i], grid, notes.tpq)
     end
     return r

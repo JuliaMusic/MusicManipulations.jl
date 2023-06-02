@@ -1,4 +1,4 @@
-@testset "Random Notes Sequence"
+@testset "Random Notes Sequence" begin
 
     # Dummy sequence
     tpq = 960

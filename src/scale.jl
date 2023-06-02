@@ -1,5 +1,6 @@
 using MIDI
 using StatsBase
+using DataStructures
 
 # export scale_identification, SCALES
 export note_to_fundamental, pitch_frequency
@@ -60,7 +61,7 @@ sorted by most to least frequent.
 """
 pitch_frequency(notes) = pitch_frequency(note_to_fundamental(notes))
 function pitch_frequency(fundamentals::Vector{String})
-    occurency = sort(Dict(value => key for (key, value) in countmap(fundamentals)), rev = true)
+    occurency = sort!(OrderedDict(value => key for (key, value) in countmap(fundamentals)), rev = true)
     most_frequent = collect(values(occurency))
     return most_frequent
 end

@@ -87,8 +87,8 @@ end
 end
 
 midipath = dirname(dirname(pathof(MIDI)))*"/test/"
-midis = [readMIDIFile(joinpath(@__DIR__, "serenade_full.mid")),
-readMIDIFile(joinpath(midipath, "doxy.mid"))
+midis = [load(joinpath(@__DIR__, "serenade_full.mid")),
+load(joinpath(midipath, "doxy.mid"))
 ]
 
 @testset "MTD timeseries $i" for i in 1:2
