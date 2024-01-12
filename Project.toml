@@ -15,11 +15,13 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 ARFIMA = "0.3.0, 0.4"
+DataStructures = "0.18"
 MIDI = "1.4.1, 2.0"
 MotifSequenceGenerator = "1.0"
+Random = "1.1"
 Reexport = "0.2, 0.3, 1"
-StatsBase = "0.32, 0.33"
-DataStructures = "0.18"
+Statistics = "1.1"
+StatsBase = "0.32, 0.33, 0.34"
 julia = "1.1"
 
 [extras]
